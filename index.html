@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@newe.reads — Creative Hub</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+:root{--espresso:#3B2314;--chocolate:#7B4A2D;--camel:#B07B52;--oat:#D4C4B0;--cream:#F2EDE4;--noir:#1A1A1A;--burgundy:#6B2737;--olive:#4A5240;--sunshine:#F5C842;--golden:#E8A820;--butter:#FBF0C4;--text:#2C2C2A;--muted:#888780;--nav-h:56px;--side-w:196px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cream);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+
+/* LOGIN */
+#login{position:fixed;inset:0;background:var(--espresso);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;padding:2rem;z-index:9999;}
+.login-logo{font-family:'Playfair Display',serif;font-size:2rem;color:var(--cream);}
+.login-logo span{color:var(--sunshine);}
+.login-ns{font-family:'Playfair Display',serif;font-style:italic;font-size:0.88rem;color:var(--oat);border-left:2px solid var(--sunshine);padding-left:0.85rem;}
+.login-box{background:rgba(255,255,255,0.06);border:1px solid rgba(245,200,66,0.25);border-radius:12px;padding:1.75rem;width:100%;max-width:320px;display:flex;flex-direction:column;gap:0.9rem;}
+.login-box input{background:rgba(255,255,255,0.08);border:1px solid rgba(212,196,176,0.3);border-radius:7px;padding:0.65rem 0.9rem;font-size:0.85rem;color:var(--cream);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;}
+.login-box input::placeholder{color:var(--muted);}
+.login-box input:focus{border-color:var(--sunshine);}
+.login-box button{background:var(--sunshine);color:var(--espresso);border:none;border-radius:7px;padding:0.7rem;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+.login-err{font-size:0.72rem;color:var(--burgundy);text-align:center;min-height:1em;}
+.login-lbl{font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--camel);}
+#app{display:none;min-height:100vh;}
+
+/* TOP NAV */
+.topnav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:var(--espresso);display:flex;align-items:center;z-index:100;border-bottom:2px solid rgba(245,200,66,0.2);}
+.topnav-logo{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--cream);padding:0 1.15rem;white-space:nowrap;border-right:1px solid rgba(212,196,176,0.15);}
+.topnav-logo span{color:var(--sunshine);}
+.topnav-sections{display:flex;flex:1;overflow-x:auto;scrollbar-width:none;}
+.topnav-sections::-webkit-scrollbar{display:none;}
+.nav-btn{flex-shrink:0;display:flex;align-items:center;gap:0.35rem;padding:0 1.1rem;height:var(--nav-h);font-size:0.69rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--oat);cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;}
+.nav-btn.active{color:var(--sunshine);border-bottom-color:var(--sunshine);background:rgba(245,200,66,0.06);}
+.nav-btn:hover{color:var(--cream);}
+
+/* SIDEBAR */
+.app-body{display:flex;margin-top:var(--nav-h);min-height:calc(100vh - var(--nav-h));}
+.sidebar{width:var(--side-w);background:var(--chocolate);flex-shrink:0;position:fixed;top:var(--nav-h);bottom:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(212,196,176,0.2) transparent;}
+.sidebar::-webkit-scrollbar{width:3px;}
+.sidebar-section{display:none;}
+.sidebar-section.active{display:block;}
+.sb-head{font-size:0.53rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(212,196,176,0.45);padding:1rem 1rem 0.35rem;}
+.sb-item{display:block;padding:0.58rem 1rem;font-size:0.74rem;color:var(--oat);cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:all 0.15s;border-left:2px solid transparent;line-height:1.35;}
+.sb-item:hover{color:var(--cream);background:rgba(255,255,255,0.04);}
+.sb-item.active{color:var(--sunshine);border-left-color:var(--sunshine);background:rgba(245,200,66,0.07);}
+.main{margin-left:var(--side-w);flex:1;padding:2rem 2.25rem 3rem;max-width:860px;}
+.view{display:none;}
+.view.active{display:block;}
+@media(max-width:680px){.sidebar{display:none;}.main{margin-left:0;padding:1.25rem 1rem 2.5rem;}.g2{grid-template-columns:1fr!important;}}
+
+/* UTILS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;}
+.gap{margin-bottom:1rem;}
+.pg-title{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--espresso);margin-bottom:0.2rem;}
+.pg-sub{font-size:0.77rem;color:var(--muted);margin-bottom:1.65rem;line-height:1.5;}
+.sec-lbl{font-size:0.57rem;font-weight:600;letter-spacing:0.11em;text-transform:uppercase;color:var(--camel);margin-bottom:0.6rem;padding-bottom:0.28rem;border-bottom:1px solid rgba(176,123,82,0.18);}
+.fn{text-align:center;font-family:'Playfair Display',serif;font-style:italic;font-size:0.77rem;color:var(--camel);padding:1.5rem 0 0.5rem;}
+
+/* CARDS */
+.card{background:white;border-radius:10px;padding:1.1rem 1.25rem;border:1px solid rgba(176,123,82,0.15);}
+.card.hi{background:var(--butter);border-color:var(--golden);}
+.card.dk{background:var(--espresso);border-color:transparent;}
+.card.dk .cv{color:var(--cream);font-family:'Playfair Display',serif;font-style:italic;line-height:1.8;}
+.card.dk span{color:var(--sunshine);}
+.card.al{border-left:4px solid var(--camel);}
+.cl{font-size:0.57rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--camel);margin-bottom:0.45rem;}
+.cv{font-size:0.81rem;color:var(--text);line-height:1.65;}
+.row{display:flex;gap:0.6rem;padding:0.55rem 0;border-bottom:1px solid rgba(176,123,82,0.1);align-items:flex-start;}
+.row:last-child{border-bottom:none;}
+.rd{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.d-done{background:var(--olive);}.d-next{background:var(--sunshine);}.d-soon{background:var(--camel);}.d-later{background:var(--oat);}
+.rt{font-size:0.59rem;font-weight:600;color:var(--camel);width:44px;flex-shrink:0;padding-top:1px;text-transform:uppercase;letter-spacing:0.05em;}
+.rv{font-size:0.79rem;color:var(--text);line-height:1.45;flex:1;}
+.ri{flex-shrink:0;font-size:0.85rem;line-height:1.5;}
+
+/* ACCORDION */
+.acc{background:white;border-radius:10px;border:1px solid rgba(176,123,82,0.15);margin-bottom:0.55rem;overflow:hidden;}
+.acc-hd{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.2rem;cursor:pointer;user-select:none;transition:background 0.15s;}
+.acc-hd:hover{background:rgba(176,123,82,0.04);}
+.acc-hd.open{background:rgba(176,123,82,0.05);}
+.acc-title{font-size:0.84rem;font-weight:600;color:var(--espresso);}
+.acc-meta{font-size:0.68rem;color:var(--muted);margin-top:0.08rem;}
+.acc-arr{font-size:0.75rem;color:var(--camel);transition:transform 0.22s;flex-shrink:0;}
+.acc-hd.open .acc-arr{transform:rotate(180deg);}
+.acc-body{display:none;padding:0 1.2rem 1rem;border-top:1px solid rgba(176,123,82,0.1);}
+.acc-body.open{display:block;}
+
+/* FMC QUICK CHIPS */
+.fmc-chips{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.25rem;}
+.fmc-chip{font-size:0.68rem;font-weight:600;padding:0.32rem 0.8rem;border-radius:20px;border:2px solid transparent;cursor:pointer;transition:all 0.18s;}
+.fmc-chip:hover{opacity:0.85;}
+
+/* CHAR CARDS */
+.ch-card{background:white;border-radius:10px;padding:1.1rem 1.25rem;border:1px solid rgba(176,123,82,0.15);border-top:3px solid var(--camel);margin-bottom:0.7rem;}
+.ch-name{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--espresso);margin-bottom:0.08rem;}
+.ch-book{font-size:0.66rem;color:var(--camel);font-style:italic;margin-bottom:0.38rem;}
+.ch-soul{font-size:0.72rem;font-weight:600;color:var(--chocolate);margin-bottom:0.32rem;line-height:1.4;}
+.ch-desc{font-size:0.75rem;color:var(--muted);line-height:1.62;}
+.ch-haley{font-size:0.71rem;color:var(--camel);font-style:italic;margin-top:0.4rem;padding-top:0.38rem;border-top:1px solid rgba(176,123,82,0.15);line-height:1.5;}
+.ch-quick{display:none;}
+.ch-quick.show{display:block;}
+
+/* HORIZONS */
+.hz{background:white;border-radius:10px;padding:1.1rem 1.35rem;border:1px solid rgba(176,123,82,0.15);border-left:4px solid var(--camel);margin-bottom:0.7rem;}
+.hz-yr{font-size:0.59rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--camel);margin-bottom:0.28rem;}
+.hz-title{font-family:'Playfair Display',serif;font-size:0.98rem;color:var(--espresso);margin-bottom:0.32rem;}
+.hz-desc{font-size:0.76rem;color:var(--muted);line-height:1.55;margin-bottom:0.5rem;}
+.hz-item{font-size:0.74rem;color:var(--text);display:flex;gap:0.45rem;margin-bottom:0.22rem;}
+.hz-item::before{content:'✦';color:var(--sunshine);font-size:0.57rem;flex-shrink:0;margin-top:3px;}
+
+/* SWATCHES */
+.sw-row{display:flex;gap:0.38rem;flex-wrap:wrap;margin-bottom:0.8rem;}
+.sw{border-radius:7px;overflow:hidden;flex:1;min-width:55px;}
+.sw-c{height:48px;}
+.sw-i{background:white;padding:0.3rem 0.4rem;border:1px solid rgba(176,123,82,0.15);border-top:none;border-radius:0 0 7px 7px;}
+.sw-n{font-size:0.62rem;font-weight:600;color:var(--espresso);display:block;}
+.sw-h{font-size:0.57rem;color:var(--muted);font-family:monospace;}
+
+/* PILLARS */
+.pillar{background:white;border-radius:10px;padding:1rem 1.2rem;border:1px solid rgba(176,123,82,0.15);border-left:4px solid var(--camel);}
+.p-name{font-size:0.82rem;font-weight:600;color:var(--espresso);margin-bottom:0.22rem;}
+.p-desc{font-size:0.74rem;color:var(--muted);line-height:1.55;margin-bottom:0.32rem;}
+.p-freq{font-size:0.63rem;font-weight:500;color:var(--camel);}
+
+/* VINYL */
+.vc{background:white;border-radius:10px;padding:1.1rem 1.25rem;border:1px solid rgba(176,123,82,0.15);border-top:3px solid var(--espresso);margin-bottom:0.65rem;}
+.vc-char{font-family:'Playfair Display',serif;font-size:0.93rem;color:var(--espresso);margin-bottom:0.05rem;}
+.vc-album{font-size:0.77rem;font-weight:600;color:var(--chocolate);margin-bottom:0.05rem;}
+.vc-artist{font-size:0.67rem;color:var(--camel);margin-bottom:0.38rem;font-style:italic;}
+.vc-why{font-size:0.73rem;color:var(--muted);line-height:1.62;}
+
+/* VOICE */
+.vr{display:flex;gap:0.5rem;padding:0.65rem 0;border-bottom:1px solid rgba(176,123,82,0.1);}
+.vr:last-child{border-bottom:none;}
+.va{font-size:0.72rem;font-weight:600;color:var(--burgundy);width:112px;flex-shrink:0;line-height:1.5;padding-top:1px;}
+.vb{font-size:0.76rem;color:var(--text);line-height:1.6;flex:1;}
+.veg{font-size:0.7rem;font-style:italic;color:var(--camel);margin-top:0.28rem;line-height:1.5;}
+.veg::before{content:'"';}.veg::after{content:'"';}
+
+/* COMPS */
+.cc{background:white;border-radius:10px;padding:1.1rem 1.25rem;border:1px solid rgba(176,123,82,0.15);border-left:4px solid var(--camel);margin-bottom:0.65rem;}
+.cc-h{font-family:'Playfair Display',serif;font-size:0.93rem;color:var(--espresso);margin-bottom:0.18rem;}
+.cc-m{font-size:0.65rem;color:var(--camel);margin-bottom:0.35rem;font-weight:600;}
+.cc-tag{display:inline-block;font-size:0.57rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;background:rgba(176,123,82,0.1);color:var(--camel);border-radius:4px;padding:0.17rem 0.42rem;margin-right:0.28rem;margin-bottom:0.28rem;}
+.cc-desc{font-size:0.74rem;color:var(--muted);line-height:1.55;margin-bottom:0.42rem;margin-top:0.28rem;}
+.cc-learn{font-size:0.71rem;color:var(--chocolate);font-weight:500;}
+.cc-learn span{color:var(--muted);font-weight:400;}
+
+/* RELEASE */
+.rel{display:flex;gap:0.8rem;padding:0.65rem 0;border-bottom:1px solid rgba(176,123,82,0.12);align-items:flex-start;}
+.rel:last-child{border-bottom:none;}
+.rel-d{font-size:0.63rem;font-weight:600;background:var(--chocolate);color:var(--cream);padding:0.24rem 0.48rem;border-radius:5px;white-space:nowrap;flex-shrink:0;}
+.rel-d.hot{background:var(--sunshine);color:var(--espresso);}
+.rel-t{font-size:0.8rem;font-weight:500;color:var(--espresso);}
+.rel-a{font-size:0.67rem;color:var(--muted);margin-top:0.07rem;}
+.rel-n{font-size:0.65rem;color:var(--camel);font-style:italic;margin-top:0.1rem;}
+
+/* BUILD */
+.bi{display:flex;align-items:flex-start;gap:0.65rem;padding:0.55rem 0;border-bottom:1px solid rgba(176,123,82,0.08);cursor:pointer;}
+.bi:last-child{border-bottom:none;}
+.bchk{width:17px;height:17px;border-radius:4px;border:1.5px solid var(--oat);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;transition:all 0.15s;}
+.bi.checked .bchk{background:var(--olive);border-color:var(--olive);color:white;}
+.bi.checked .bm{text-decoration:line-through;color:var(--muted);}
+.bm{font-size:0.78rem;color:var(--text);font-weight:500;margin-bottom:0.1rem;}
+.bs{font-size:0.68rem;color:var(--muted);line-height:1.4;}
+.prog-bar{height:5px;background:rgba(176,123,82,0.2);border-radius:3px;margin:0.8rem 0 0.22rem;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--olive),var(--camel));border-radius:3px;transition:width 0.4s ease;}
+.prog-lbl{font-size:0.64rem;color:var(--muted);text-align:right;}
+
+/* CONTENT WEEK PLANNER */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.3rem;margin-bottom:1rem;}
+.day-cell{background:white;border-radius:6px;padding:0.4rem 0.3rem;border:1.5px solid rgba(176,123,82,0.15);min-height:72px;cursor:pointer;position:relative;transition:border-color 0.15s;}
+.day-cell:hover{border-color:var(--camel);}
+.day-cell.has-post{border-color:var(--camel);}
+.day-label{font-size:0.52rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.25rem;}
+.day-post{font-size:0.58rem;color:var(--espresso);line-height:1.35;padding:0.25rem 0.3rem;border-radius:4px;margin-bottom:0.18rem;}
+.day-add{font-size:0.62rem;color:var(--oat);cursor:pointer;}
+.day-add:hover{color:var(--camel);}
+
+/* PILLAR TRACKER */
+.pillar-track{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;}
+.pt{display:flex;flex-direction:column;align-items:center;gap:0.25rem;cursor:pointer;}
+.pt-dot{width:36px;height:36px;border-radius:50%;border:2px solid var(--oat);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:var(--muted);transition:all 0.2s;}
+.pt.active .pt-dot{border-color:transparent;color:white;}
+.pt-lbl{font-size:0.55rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);text-align:center;}
+
+/* CAPTION WORKSPACE */
+.ws{background:white;border-radius:10px;border:1px solid rgba(176,123,82,0.15);overflow:hidden;margin-bottom:1rem;}
+.ws-hd{background:var(--espresso);padding:0.82rem 1.2rem;display:flex;align-items:center;gap:0.7rem;}
+.ws-t{font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--sunshine);}
+.ws-b{font-size:0.57rem;background:rgba(245,200,66,0.15);color:var(--sunshine);border:1px solid rgba(245,200,66,0.3);border-radius:4px;padding:0.14rem 0.48rem;font-weight:600;text-transform:uppercase;}
+.ws-bd{padding:1rem 1.2rem;}
+.ws-lbl{font-size:0.58rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--camel);margin-bottom:0.45rem;}
+.pills{display:flex;flex-wrap:wrap;gap:0.38rem;margin-bottom:0.8rem;}
+.pill{font-size:0.67rem;padding:0.28rem 0.72rem;border-radius:20px;border:1.5px solid var(--oat);color:var(--muted);cursor:pointer;transition:all 0.15s;background:transparent;}
+.pill:hover{border-color:var(--camel);color:var(--camel);}
+.pill.active{background:var(--camel);border-color:var(--camel);color:white;font-weight:600;}
+.ws-ta{width:100%;border:1px solid rgba(176,123,82,0.25);border-radius:7px;padding:0.72rem 0.88rem;font-size:0.81rem;font-family:'Inter',sans-serif;color:var(--text);resize:vertical;min-height:130px;outline:none;background:var(--cream);line-height:1.65;transition:border-color 0.2s;}
+.ws-ta:focus{border-color:var(--camel);}
+.ws-acts{display:flex;gap:0.55rem;margin-top:0.65rem;flex-wrap:wrap;}
+.ws-btn{font-size:0.69rem;font-weight:600;padding:0.42rem 0.88rem;border-radius:6px;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.18s;letter-spacing:0.03em;}
+.ws-btn.pr{background:var(--espresso);color:var(--cream);}
+.ws-btn.se{background:transparent;color:var(--camel);border:1.5px solid var(--camel);}
+.ws-btn:hover{opacity:0.82;}
+.char-count{font-size:0.65rem;color:var(--muted);margin-top:0.35rem;text-align:right;}
+.char-count.warn{color:var(--golden);}
+.char-count.over{color:var(--burgundy);}
+
+/* DRAFT LIST */
+.draft-item{background:var(--cream);border-radius:8px;padding:0.85rem 1rem;border:1px solid rgba(176,123,82,0.15);margin-bottom:0.5rem;transition:border-color 0.15s;}
+.draft-item:hover{border-color:var(--camel);}
+.draft-top{display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem;margin-bottom:0.35rem;}
+.draft-pill{font-size:0.57rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;background:var(--butter);color:var(--camel);border-radius:4px;padding:0.18rem 0.45rem;flex-shrink:0;}
+.draft-acts{display:flex;gap:0.35rem;}
+.draft-act{font-size:0.62rem;color:var(--muted);cursor:pointer;padding:0.15rem 0.4rem;border:1px solid rgba(176,123,82,0.2);border-radius:4px;transition:all 0.15s;background:white;}
+.draft-act:hover{border-color:var(--camel);color:var(--camel);}
+.draft-act.del:hover{border-color:var(--burgundy);color:var(--burgundy);}
+.draft-text{font-size:0.77rem;color:var(--text);line-height:1.55;}
+.draft-date{font-size:0.6rem;color:var(--muted);margin-top:0.25rem;}
+.draft-status-tag{font-size:0.57rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:0.12rem 0.38rem;border-radius:4px;}
+.st-ready{background:rgba(74,82,64,0.12);color:var(--olive);}
+.st-draft{background:rgba(176,123,82,0.12);color:var(--camel);}
+
+/* HASHTAG */
+.ht{background:white;border-radius:10px;padding:1rem 1.2rem;border:1px solid rgba(176,123,82,0.15);margin-bottom:0.65rem;}
+.ht-n{font-size:0.69rem;font-weight:600;color:var(--chocolate);margin-bottom:0.45rem;}
+.ht-tags{font-size:0.74rem;color:var(--camel);line-height:1.9;word-break:break-word;}
+.ht-cp{font-size:0.63rem;font-weight:600;color:var(--muted);cursor:pointer;margin-top:0.45rem;display:inline-block;border:1px solid var(--oat);border-radius:4px;padding:0.18rem 0.52rem;transition:all 0.15s;}
+.ht-cp:hover{border-color:var(--camel);color:var(--camel);}
+.ht-cp.copied{color:var(--olive);border-color:var(--olive);}
+
+/* SHOT LIST */
+.shot{background:white;border-radius:10px;padding:1rem 1.2rem;border:1px solid rgba(176,123,82,0.15);border-left:4px solid var(--camel);margin-bottom:0.62rem;}
+.shot-t{font-size:0.81rem;font-weight:600;color:var(--espresso);margin-bottom:0.22rem;}
+.shot-p{font-size:0.59rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--camel);margin-bottom:0.28rem;}
+.shot-n{font-size:0.73rem;color:var(--muted);line-height:1.55;}
+
+/* ARC */
+.arc{background:white;border-radius:10px;padding:1.1rem 1.25rem;border:1px solid rgba(176,123,82,0.15);border-top:3px solid var(--sunshine);margin-bottom:0.65rem;}
+.arc-nm{font-family:'Playfair Display',serif;font-size:0.93rem;color:var(--espresso);margin-bottom:0.08rem;}
+.arc-st{font-size:0.61rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--sunshine);margin-bottom:0.42rem;}
+.arc-tpl{font-size:0.75rem;color:var(--text);line-height:1.72;background:var(--cream);border-radius:6px;padding:0.72rem 0.88rem;border:1px solid rgba(176,123,82,0.15);margin-bottom:0.45rem;font-style:italic;}
+.arc-nt{font-size:0.69rem;color:var(--camel);}
+
+/* CHART */
+.ch2{background:white;border-radius:10px;padding:1.1rem 1.25rem;border:1px solid rgba(176,123,82,0.15);margin-bottom:0.65rem;}
+.ch2-pl{font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--camel);margin-bottom:0.26rem;}
+.ch2-mn{font-size:0.81rem;font-weight:500;color:var(--espresso);margin-bottom:0.26rem;}
+.ch2-ap{font-size:0.74rem;color:var(--muted);line-height:1.55;}
+.ch2-ap strong{color:var(--chocolate);font-weight:500;}
+
+/* PITCH */
+.pb{background:white;border-radius:10px;padding:1.15rem 1.4rem;border:1px solid rgba(176,123,82,0.15);margin-bottom:0.82rem;}
+.pb-l{font-size:0.57rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--camel);margin-bottom:0.55rem;padding-bottom:0.32rem;border-bottom:1px solid rgba(176,123,82,0.12);}
+.pb-t{font-size:0.81rem;color:var(--text);line-height:1.75;}
+.pb-t strong{color:var(--espresso);}
+.pb-t em{color:var(--camel);font-style:normal;font-weight:500;}
+
+/* NOW CARD */
+.now{background:var(--espresso);border-radius:10px;padding:1.2rem 1.4rem;margin-bottom:1rem;}
+.now p{font-family:'Playfair Display',serif;font-style:italic;font-size:0.88rem;color:var(--cream);line-height:1.78;}
+.now span{color:var(--sunshine);}
+
+/* MILESTONE TRACKER */
+.ms-card{background:white;border-radius:10px;padding:1.1rem 1.25rem;border:1px solid rgba(176,123,82,0.15);margin-bottom:0.5rem;}
+.ms-row{display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid rgba(176,123,82,0.08);cursor:pointer;}
+.ms-row:last-child{border-bottom:none;}
+.ms-chk{width:20px;height:20px;border-radius:50%;border:2px solid var(--oat);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all 0.2s;}
+.ms-row.hit .ms-chk{background:var(--sunshine);border-color:var(--sunshine);color:var(--espresso);}
+.ms-row.hit .ms-txt{text-decoration:line-through;color:var(--muted);}
+.ms-txt{font-size:0.78rem;color:var(--text);flex:1;line-height:1.4;}
+.ms-badge{font-size:0.58rem;font-weight:600;background:rgba(245,200,66,0.15);color:var(--golden);border-radius:4px;padding:0.12rem 0.4rem;flex-shrink:0;}
+
+/* PROMPT GENERATOR */
+.prompt-output{background:var(--butter);border-radius:8px;padding:1rem 1.1rem;border:1px solid var(--golden);margin-top:0.75rem;font-family:'Playfair Display',serif;font-style:italic;font-size:0.88rem;color:var(--espresso);line-height:1.78;min-height:3.5rem;}
+.prompt-btn{background:var(--espresso);color:var(--sunshine);border:none;border-radius:7px;padding:0.55rem 1.2rem;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity 0.18s;letter-spacing:0.03em;}
+.prompt-btn:hover{opacity:0.85;}
+.prompt-btn.se{background:transparent;color:var(--camel);border:1.5px solid var(--camel);margin-left:0.5rem;}
+
+/* BIO BUILDER */
+.bio-preview{background:var(--espresso);border-radius:10px;padding:1.15rem 1.3rem;margin-bottom:0.75rem;}
+.bio-handle{font-family:'Playfair Display',serif;font-size:1rem;color:var(--sunshine);margin-bottom:0.1rem;}
+.bio-name{font-size:0.78rem;font-weight:600;color:var(--cream);margin-bottom:0.35rem;}
+.bio-text{font-size:0.79rem;color:var(--oat);line-height:1.65;white-space:pre-line;}
+.bio-char{font-size:0.62rem;color:rgba(212,196,176,0.5);margin-top:0.4rem;text-align:right;}
+.bio-input{width:100%;border:1px solid rgba(176,123,82,0.25);border-radius:7px;padding:0.65rem 0.88rem;font-size:0.8rem;font-family:'Inter',sans-serif;color:var(--text);resize:none;outline:none;background:white;line-height:1.6;transition:border-color 0.2s;}
+.bio-input:focus{border-color:var(--camel);}
+.bio-versions{display:flex;flex-direction:column;gap:0.45rem;margin-top:0.75rem;}
+.bio-v{background:white;border-radius:7px;padding:0.75rem 1rem;border:1px solid rgba(176,123,82,0.15);cursor:pointer;transition:border-color 0.15s;}
+.bio-v:hover{border-color:var(--camel);}
+.bio-v-label{font-size:0.58rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--camel);margin-bottom:0.28rem;}
+.bio-v-text{font-size:0.77rem;color:var(--text);line-height:1.55;}
+.bio-v-use{font-size:0.62rem;color:var(--muted);margin-top:0.2rem;cursor:pointer;}
+.bio-v-use:hover{color:var(--camel);}
+
+/* CONTENT GAP */
+.gap-track{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;}
+.gap-dot{display:flex;flex-direction:column;align-items:center;gap:0.3rem;min-width:72px;}
+.gap-ring{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;position:relative;}
+.gap-ring svg{position:absolute;top:0;left:0;}
+.gap-ring-num{position:relative;z-index:1;}
+.gap-name{font-size:0.54rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);text-align:center;max-width:72px;}
+.gap-status{font-size:0.58rem;padding:0.1rem 0.38rem;border-radius:10px;font-weight:600;}
+.gap-ok{background:rgba(74,82,64,0.12);color:var(--olive);}
+.gap-warn{background:rgba(232,168,32,0.15);color:var(--golden);}
+.gap-crit{background:rgba(107,39,55,0.12);color:var(--burgundy);}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(59,35,20,0.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal-bg.hidden{display:none;}
+.modal{background:var(--cream);border-radius:14px;padding:1.5rem;max-width:440px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(59,35,20,0.3);}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--espresso);margin-bottom:0.25rem;}
+.modal-sub{font-size:0.75rem;color:var(--muted);margin-bottom:1rem;}
+.modal-input{width:100%;border:1px solid rgba(176,123,82,0.25);border-radius:7px;padding:0.65rem 0.88rem;font-size:0.8rem;font-family:'Inter',sans-serif;color:var(--text);outline:none;background:white;margin-bottom:0.5rem;}
+.modal-input:focus{border-color:var(--camel);}
+.modal-acts{display:flex;gap:0.5rem;margin-top:0.75rem;justify-content:flex-end;}
+.modal-btn{font-size:0.72rem;font-weight:600;padding:0.45rem 1rem;border-radius:6px;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+.modal-btn.pr{background:var(--espresso);color:var(--cream);}
+.modal-btn.se{background:transparent;color:var(--muted);border:1px solid rgba(176,123,82,0.3);}
+.modal-sel{width:100%;border:1px solid rgba(176,123,82,0.25);border-radius:7px;padding:0.55rem 0.75rem;font-size:0.79rem;font-family:'Inter',sans-serif;color:var(--text);outline:none;background:white;margin-bottom:0.5rem;cursor:pointer;}
+
+/* CONFETTI / CELEBRATION */
+@keyframes pop{0%{transform:scale(0.8);opacity:0;}60%{transform:scale(1.12);}100%{transform:scale(1);opacity:1;}}
+.celebrate{animation:pop 0.35s ease;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-logo">@newe<span>.</span>reads</div>
+  <div class="login-ns">"She closed that chapter. She's still a romantic."</div>
+  <div class="login-box">
+    <div class="login-lbl">Private Creative Hub</div>
+    <input type="text" id="lu" placeholder="username" autocomplete="off" autocapitalize="off"/>
+    <input type="password" id="lp" placeholder="password" autocomplete="off"/>
+    <button onclick="tryLogin()">Enter 💛</button>
+    <div class="login-err" id="lerr"></div>
+  </div>
+</div>
+
+<!-- ADD POST MODAL -->
+<div class="modal-bg hidden" id="postModal">
+  <div class="modal">
+    <div class="modal-title">Add to Week</div>
+    <div class="modal-sub" id="modalDay"></div>
+    <select class="modal-sel" id="modalPillar">
+      <option value="">Select pillar…</option>
+      <option value="Fashion x Books">Fashion x Books 👗</option>
+      <option value="Reviews + Recs">Reviews + Recs 📖</option>
+      <option value="Lifestyle">Lifestyle ☕</option>
+      <option value="Community">Community 💬</option>
+      <option value="Her Story">Her Story 🌙</option>
+      <option value="Short-Form / Reels">Short-Form / Reels 🎬</option>
+      <option value="Vinyl">Vinyl ♪</option>
+    </select>
+    <input class="modal-input" id="modalPost" placeholder="Post idea or title…"/>
+    <div class="modal-acts">
+      <button class="modal-btn se" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn pr" onclick="savePost()">Add 💛</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<nav class="topnav">
+  <div class="topnav-logo">@newe<span>.</span>reads</div>
+  <div class="topnav-sections">
+    <button class="nav-btn active" onclick="setSection('her',this)">🌙 Her</button>
+    <button class="nav-btn" onclick="setSection('plan',this)">📋 The Plan</button>
+    <button class="nav-btn" onclick="setSection('create',this)">✍️ Create</button>
+    <button class="nav-btn" onclick="setSection('world',this)">🎨 Her World</button>
+  </div>
+</nav>
+
+<div class="app-body">
+<aside class="sidebar">
+  <div class="sidebar-section active" id="sb-her">
+    <div class="sb-head">Identity</div>
+    <button class="sb-item active" onclick="setView('her-why',this,'her')">Her Why</button>
+    <button class="sb-item" onclick="setView('her-fmcs',this,'her')">The Five FMCs</button>
+    <button class="sb-item" onclick="setView('her-pitch',this,'her')">The Pitch</button>
+    <div class="sb-head">Voice & Values</div>
+    <button class="sb-item" onclick="setView('her-voice',this,'her')">Voice Sheet</button>
+    <button class="sb-item" onclick="setView('her-rules',this,'her')">The Rules</button>
+    <button class="sb-item" onclick="setView('her-chart',this,'her')">Her Chart</button>
+  </div>
+  <div class="sidebar-section" id="sb-plan">
+    <div class="sb-head">Right Now</div>
+    <button class="sb-item active" onclick="setView('plan-now',this,'plan')">Compass</button>
+    <button class="sb-item" onclick="setView('plan-milestones',this,'plan')">Milestones 💛</button>
+    <button class="sb-item" onclick="setView('plan-build',this,'plan')">Build Checklist</button>
+    <div class="sb-head">Roadmap</div>
+    <button class="sb-item" onclick="setView('plan-roadmap',this,'plan')">Sprint Roadmap 🗺</button>
+    <button class="sb-item" onclick="setView('plan-6mo',this,'plan')">6 Month Roadmap</button>
+    <button class="sb-item" onclick="setView('plan-vision',this,'plan')">Vision (1–3 Year)</button>
+    <div class="sb-head">Research</div>
+    <button class="sb-item" onclick="setView('plan-comps',this,'plan')">Comp Accounts</button>
+  </div>
+  <div class="sidebar-section" id="sb-create">
+    <div class="sb-head">Write</div>
+    <button class="sb-item active" onclick="setView('create-cap',this,'create')">Caption Workspace</button>
+    <button class="sb-item" onclick="setView('create-drafts',this,'create')">Saved Drafts</button>
+    <div class="sb-head">Plan</div>
+    <button class="sb-item" onclick="setView('create-week',this,'create')">Week Planner 🗓</button>
+    <button class="sb-item" onclick="setView('create-bio',this,'create')">Bio Builder</button>
+    <button class="sb-item" onclick="setView('create-stuck',this,'create')">When I'm Stuck 💡</button>
+    <div class="sb-head">Toolkit</div>
+    <button class="sb-item" onclick="setView('create-pitch',this,'create')">Elevator Pitch 🎤</button>
+    <button class="sb-item" onclick="setView('create-gr',this,'create')">Your Reads 📚</button>
+    <button class="sb-item" onclick="setView('create-ht',this,'create')">Hashtag Banks</button>
+    <button class="sb-item" onclick="setView('create-arc',this,'create')">ARC Outreach</button>
+    <button class="sb-item" onclick="setView('create-shots',this,'create')">Shot List</button>
+  </div>
+  <div class="sidebar-section" id="sb-world">
+    <div class="sb-head">Your World</div>
+    <button class="sb-item active" onclick="setView('world-pillars',this,'world')">Content Pillars</button>
+    <button class="sb-item" onclick="setView('world-palette',this,'world')">Palette</button>
+    <div class="sb-head">Your Series</div>
+    <button class="sb-item" onclick="setView('world-vinyl',this,'world')">Vinyl ♪</button>
+    <button class="sb-item" onclick="setView('world-baking',this,'world')">Baking Map 🍞</button>
+    <button class="sb-item" onclick="setView('world-life',this,'world')">Lifestyle Map</button>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- ══ HER WHY ══ -->
+<div class="view active" id="view-her-why">
+  <div class="pg-title">Her Why</div>
+  <div class="pg-sub">Read this when you lose the thread. This is the whole thing.</div>
+  <div class="card dk gap"><div class="cv">She is a blend of all her favorite FMCs. Effervescent, quirky, and proof that love is still out there — <span>even when you feel like a Nesta.</span> A hot girl who loves life again and isn't apologizing for it anymore.<br><br>Most bookstagram accounts show you what they read. @newe.reads shows you <span>who she became</span> through what she read. The fashion, the aesthetic, the full sensory world — all of it in service of one thing: a woman who came out the other side still a romantic, and isn't keeping that to herself.<br><br>She is not performing healing. She arrived. And she is <span>sharing, not teaching.</span></div></div>
+  <div class="card hi gap"><div class="cl">North Star</div><div class="cv" style="font-family:'Playfair Display',serif;font-style:italic;font-size:1.02rem;color:var(--espresso);">"She closed that chapter. She's still a romantic."</div></div>
+  <div class="sec-lbl gap">The permission slip</div>
+  <div class="card gap" style="border-left:3px solid var(--sunshine);"><div class="cv" style="font-family:'Playfair Display',serif;font-style:italic;color:var(--espresso);line-height:1.82;">It is okay to not feel okay. You do not have to be fully healed to start. You do not have to perform joy to share joy. Life begins at the end of your comfort zone — and you have already proven, more than once, that you are brave enough to walk toward it. This account exists because you showed up for yourself. That is enough. That has always been enough.</div></div>
+  <div class="sec-lbl">What her audience feels when they find her</div>
+  <div class="card hi"><div class="cv" style="font-family:'Playfair Display',serif;font-style:italic;font-size:0.95rem;color:var(--espresso);line-height:1.78;">"Finally. Someone who gets it."</div></div>
+  <div class="fn">You didn't save inspo on Pinterest. You saved yourself. 💛🌙</div>
+</div>
+
+<!-- ══ THE FIVE FMCs ══ -->
+<div class="view" id="view-her-fmcs">
+  <div class="pg-title">The Five FMCs</div>
+  <div class="pg-sub">Tap a character for quick reference. Expand to read the full profile.</div>
+
+  <!-- Quick-reference chips -->
+  <div class="fmc-chips gap">
+    <div class="fmc-chip" style="background:rgba(107,39,55,0.1);color:var(--burgundy);border-color:var(--burgundy);" onclick="showQuick('nesta')">Nesta</div>
+    <div class="fmc-chip" style="background:rgba(176,123,82,0.1);color:var(--camel);border-color:var(--camel);" onclick="showQuick('cara')">Cara</div>
+    <div class="fmc-chip" style="background:rgba(74,82,64,0.1);color:var(--olive);border-color:var(--olive);" onclick="showQuick('piper')">Piper</div>
+    <div class="fmc-chip" style="background:rgba(123,74,45,0.1);color:var(--chocolate);border-color:var(--chocolate);" onclick="showQuick('bryce')">Bryce</div>
+    <div class="fmc-chip" style="background:rgba(245,200,66,0.15);color:var(--golden);border-color:var(--golden);" onclick="showQuick('persephone')">Persephone</div>
+  </div>
+
+  <!-- Quick ref panel -->
+  <div id="quick-panel" class="card hi gap" style="display:none;">
+    <div id="quick-content"></div>
+  </div>
+
+  <!-- Full accordions -->
+  <div class="acc">
+    <div class="acc-hd" onclick="togAcc(this)">
+      <div><div class="acc-title" style="color:var(--burgundy);">Nesta Archeron</div><div class="acc-meta">A Court of Silver Flames — Sarah J. Maas</div></div>
+      <div class="acc-arr">▼</div>
+    </div>
+    <div class="acc-body">
+      <div style="margin-top:0.75rem;">
+      <div style="font-size:0.72rem;font-weight:600;color:var(--chocolate);margin-bottom:0.4rem;line-height:1.4;">"She sees and feels so much that she must protect her heart with the fiery anger she releases."</div>
+      <div style="font-size:0.75rem;color:var(--muted);line-height:1.62;margin-bottom:0.5rem;">Read in the depths of divorce, in the darkest room, when everything familiar had been left behind. Nesta isn't cold — she is surviving. Secretly corroded by guilt and self-loathing she couldn't name, she numbs it because the alternative is feeling all of it at once. Sharp-tongued, stubborn, fiercely loyal to the few she lets in. She comes out the other side not softened, not grateful in the way everyone wanted — but fully, finally, unapologetically herself. The fandom is split on her. If you haven't been through hell, you hate her. If you know what it is to be surviving in plain sight — you understand her completely.</div>
+      <div style="font-size:0.71rem;color:var(--camel);font-style:italic;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">She is the one Haley read when she needed to know it was okay to still be in it. That surviving on your own terms counts.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-hd" onclick="togAcc(this)">
+      <div><div class="acc-title" style="color:var(--camel);">Cara Brodie</div><div class="acc-meta">Breathe With Me — Becca Mack</div></div>
+      <div class="acc-arr">▼</div>
+    </div>
+    <div class="acc-body">
+      <div style="margin-top:0.75rem;">
+      <div style="font-size:0.72rem;font-weight:600;color:var(--chocolate);margin-bottom:0.4rem;">Fierce and bubbly on the outside. Anxious and quietly aware underneath.</div>
+      <div style="font-size:0.75rem;color:var(--muted);line-height:1.62;margin-bottom:0.5rem;">Spunky and fierce for the people she loves — the one making everyone laugh at the party while quietly wondering if she's running out of time. Anxious underneath the bubbly exterior, with a warmth that is entirely genuine and a grief she carries quietly. Had a grandmother who mattered. Knows what it is to want something you didn't let yourself want before — and to finally stop pretending you don't want it anymore.</div>
+      <div style="font-size:0.71rem;color:var(--camel);font-style:italic;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">She is the Haley her closest friends know. The account is slowly letting more people meet this version of her.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-hd" onclick="togAcc(this)">
+      <div><div class="acc-title" style="color:var(--olive);">Piper Mitchell</div><div class="acc-meta">Power Play — Chelsea Curto</div></div>
+      <div class="acc-arr">▼</div>
+    </div>
+    <div class="acc-body">
+      <div style="margin-top:0.75rem;">
+      <div style="font-size:0.72rem;font-weight:600;color:var(--chocolate);margin-bottom:0.4rem;">Divorced, feeling stuck, terrified of re-entering the world — and sunshine incarnate through all of it.</div>
+      <div style="font-size:0.75rem;color:var(--muted);line-height:1.62;margin-bottom:0.5rem;">Divorced. Feeling stuck in her professional life. Terrified of dating again. Described as "sunshine incarnate" — and that is the whole tension. Relentlessly warm, a great friend, the person her community leans on — while privately wondering when one thing will finally go her way. She doesn't have a dramatic turning point. She just quietly, eventually, stops making herself smaller. Chooses differently — not dramatically. Just with her spine a little straighter.</div>
+      <div style="font-size:0.71rem;color:var(--camel);font-style:italic;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">She is the wise older sister voice of the account. She shares — she doesn't teach.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-hd" onclick="togAcc(this)">
+      <div><div class="acc-title" style="color:var(--chocolate);">Bryce Quinlan</div><div class="acc-meta">Crescent City — Sarah J. Maas</div></div>
+      <div class="acc-arr">▼</div>
+    </div>
+    <div class="acc-body">
+      <div style="margin-top:0.75rem;">
+      <div style="font-size:0.72rem;font-weight:600;color:var(--chocolate);margin-bottom:0.4rem;">Daytime Bryce. The one people underestimate. The content voice.</div>
+      <div style="font-size:0.75rem;color:var(--muted);line-height:1.62;margin-bottom:0.5rem;">Spunky, sexual, soft with the people she loves. Owns herself instead of letting others own her. She cried at the drop of Danika's playlist. She built a found family from scratch because she had to, and she guards them like they are everything. People underestimate her because she's bright and quick and funny, and she lets them, because she knows exactly what she is. Daytime Bryce is not the mask. Daytime Bryce is the whole woman.</div>
+      <div style="font-size:0.71rem;color:var(--camel);font-style:italic;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">She is Haley's content voice. The energy behind every caption. Currently reading CC3 — and what it's giving right now, more than anything else, is hope.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-hd" onclick="togAcc(this)">
+      <div><div class="acc-title" style="color:var(--golden);">Persephone</div><div class="acc-meta">Hades x Persephone Saga — Scarlett St. Clair (all 7)</div></div>
+      <div class="acc-arr">▼</div>
+    </div>
+    <div class="acc-body">
+      <div style="margin-top:0.75rem;">
+      <div style="font-size:0.72rem;font-weight:600;color:var(--chocolate);margin-bottom:0.4rem;">The goddess of spring whose flowers wither at her touch — until she learns to grow them somewhere no one expected.</div>
+      <div style="font-size:0.75rem;color:var(--muted);line-height:1.62;margin-bottom:0.5rem;">She starts the series having escaped her sheltered life under her controlling mother Demeter, disguised as a mortal journalist in New Athens — a goddess of spring who cannot make a single thing grow. Over all seven books, her arc is about learning to inhabit both worlds without fleeing either. She doesn't abandon spring to understand darkness. She doesn't flee darkness to get back to spring. She grows into her power in the underworld. By the final book she is the one saving Hades. She became the queen she didn't know she was.</div>
+      <div style="font-size:0.71rem;color:var(--camel);font-style:italic;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">She is the most her thing of all. A little spring, a little shadow, a lot of hopeless romantic. 💛🌙</div>
+      </div>
+    </div>
+  </div>
+  <div class="fn">She is all five. Not one at a time. All at once. 💛🌙</div>
+</div>
+
+<!-- ══ THE PITCH ══ -->
+<div class="view" id="view-her-pitch">
+  <div class="pg-title">The Pitch</div>
+  <div class="pg-sub">For editors, authors, brands, friends. The vibe leads. The category follows.</div>
+  <div class="card dk gap"><div class="cv">"Finally. Someone who gets it." <span>— that is the front door.</span> Everything else is how she decorates the house.</div></div>
+  <div class="pb gap"><div class="pb-l">Who she is</div><div class="pb-t">Haley is a blend of her favorite FMCs. <strong>Effervescent, quirky, and learning that love is still out there</strong> — even when you feel like a Nesta. A hot girl who loves life again and isn't apologizing for it anymore. Not a book reviewer. Not a fashion influencer. A <em>woman who became herself through the books she read.</em></div></div>
+  <div class="pb gap"><div class="pb-l">The one paragraph</div><div class="pb-t">@newe.reads is run by <strong>Haley</strong>, a romance and fantasy reader who loves life loudly and shares it honestly. Her content lives at the intersection of books, fashion, and the full sensory world of being a real reader — outfits styled after characters, vinyl that sounds like a world, recipes made at midnight because a book made her feel something. Her voice is warm, specific, and wise. Not an expert. Not a highlight reel. <em>A woman who has been through it, came out the other side still a romantic, and isn't keeping that to herself.</em> Her audience is the woman who reads Nesta and recognizes herself. Who reads Piper and exhales. <strong>She found her.</strong></div></div>
+  <div class="pb gap"><div class="pb-l">What makes her different</div><div class="pb-t"><strong>1. The vibe is the differentiator.</strong> Not fashion x books as a formula — a woman who is entirely herself, publicly, without apology.<br><br><strong>2. She shares, she doesn't perform.</strong> Wise older sister. "I needed this book" not "you need to read this."<br><br><strong>3. Her reader is underserved.</strong> The woman who was made smaller. Still believes in love. Tired of content that performs healing instead of living it.</div></div>
+  <div class="card hi"><div class="cl">The single sentence</div><div class="cv" style="font-family:'Playfair Display',serif;font-style:italic;font-size:0.93rem;color:var(--espresso);line-height:1.78;">She loves life again. She's not keeping it to herself. And if you've ever felt like a Nesta — you found your person.</div></div>
+</div>
+
+<!-- ══ VOICE SHEET ══ -->
+<div class="view" id="view-her-voice">
+  <div class="pg-title">Voice Sheet</div>
+  <div class="pg-sub">The cheat sheet. Every caption. Every story. Every DM.</div>
+  <div class="card hi gap"><div class="cl">In one line</div><div class="cv" style="font-family:'Playfair Display',serif;font-style:italic;font-size:0.9rem;color:var(--espresso);line-height:1.72;">Warm, specific, a little spring and a little shadow. Bubbly on the outside. Steel underneath. She shares, she doesn't teach.</div></div>
+  <div class="sec-lbl gap">What she sounds like</div>
+  <div class="card gap">
+    <div class="vr"><div class="va">✦ Specific details</div><div class="vb">She names the exact moment. The cold tea. The 1am. The chapter she had to put down.<div class="veg">I read this on a Tuesday at midnight with leftover pasta and I have not been the same since.</div></div></div>
+    <div class="vr"><div class="va">✦ Shares, doesn't lecture</div><div class="vb">Never "you should read this." Always "I needed this book at this exact moment and here's why."<div class="veg">This book found me at exactly the right time. I don't know how books do that but they do.</div></div></div>
+    <div class="vr"><div class="va">✦ Past tense — arrived</div><div class="vb">Personal content is always from the other side. "I was" not "I am."<div class="veg">There was a version of me who would have settled for almost-love. I don't know her anymore.</div></div></div>
+    <div class="vr"><div class="va">✦ Real questions</div><div class="vb">Every post ends with a specific question her audience actually wants to answer.<div class="veg">Which character from this series gave you the soft landing you didn't know you needed?</div></div></div>
+    <div class="vr"><div class="va" style="color:var(--burgundy);">× Not an expert</div><div class="vb">She is a reader who felt things. That is her credibility.<div class="veg" style="color:var(--burgundy);">Do NOT: "Here's why this is objectively the best romantasy series written."</div></div></div>
+    <div class="vr"><div class="va" style="color:var(--burgundy);">× Not generic</div><div class="vb">No "this book destroyed me." Say the specific thing that happened.<div class="veg" style="color:var(--burgundy);">Do NOT: "If you love fantasy you NEED to read this omg."</div></div></div>
+    <div class="vr"><div class="va" style="color:var(--burgundy);">× Not edited down</div><div class="vb">The Libra Rising wants to soften everything. Say the thing. Trust her people to meet her there.<div class="veg" style="color:var(--burgundy);">Do NOT: "This might be controversial but just my opinion, feel free to disagree!"</div></div></div>
+  </div>
+  <div class="sec-lbl gap">Her vocabulary</div>
+  <div class="card"><div class="cv" style="line-height:2.08;font-size:0.76rem;"><strong>Yes:</strong> found family · wise older sister · arrived · still a romantic · a little spring a little shadow · main character energy · this found me · sunshine incarnate<br><strong>Careful:</strong> healed · journey · brave · vulnerable — use sparingly; they go generic fast<br><strong>No:</strong> obsessed · slay · lowkey · bestie (unless ironic) · this book destroyed me — say the specific thing instead</div></div>
+</div>
+
+<!-- ══ THE RULES ══ -->
+<div class="view" id="view-her-rules">
+  <div class="pg-title">The Rules</div>
+  <div class="pg-sub">The content constitution. If it follows the rules, post it. Full stop.</div>
+  <div class="card gap"><div class="cl">Always</div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv">End every post with a real, specific question. The community is built in the comments.</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv">Wise older sister, not expert. "I needed this book at this exact moment" — not "you should read this."</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv">Always dress the part. Parisian autumn. Yellow is an accent, not the palette.</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv">Always protect the other story. His privacy is sacred. "I felt" — not "he did."</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv">Specificity over relatability. "I read this at 1am with cold tea" beats "this book destroyed me."</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv">If it stops feeling like joy, we change it. This account exists to give back to her.</div></div>
+  </div>
+  <div class="card gap"><div class="cl">Never</div>
+    <div class="row"><div class="ri" style="color:var(--burgundy);">×</div><div class="rv">Never post in the heat of a hard day. Wait 24 hours. Your audience deserves the processed version.</div></div>
+    <div class="row"><div class="ri" style="color:var(--burgundy);">×</div><div class="rv">Never subtweet or vague-post. If you can't name it directly, don't post about it.</div></div>
+    <div class="row"><div class="ri" style="color:var(--burgundy);">×</div><div class="rv">Never sacrifice the aesthetic for a mediocre photo. A gap in the feed is better than an off-brand post.</div></div>
+    <div class="row"><div class="ri" style="color:var(--burgundy);">×</div><div class="rv">Never review a book you didn't connect with just for content. Your taste is your credibility.</div></div>
+    <div class="row"><div class="ri" style="color:var(--burgundy);">×</div><div class="rv">Never let ARC pressure compromise your honesty. Kind and honest. Never dishonest and kind.</div></div>
+    <div class="row"><div class="ri" style="color:var(--burgundy);">×</div><div class="rv">Never post your body in a way that doesn't feel like you. Fashion because you love clothes — never as currency.</div></div>
+  </div>
+  <div class="card"><div class="cl">Pause before posting</div>
+    <div class="row"><div class="ri" style="color:var(--muted);">·</div><div class="rv">Anything that mentions or implies your ex or marriage, even obliquely</div></div>
+    <div class="row"><div class="ri" style="color:var(--muted);">·</div><div class="rv">Fertility or family content — yours to share on your terms, not reactively</div></div>
+    <div class="row"><div class="ri" style="color:var(--muted);">·</div><div class="rv">Any post written from inside a spiral vs. from the other side of one</div></div>
+    <div class="row"><div class="ri" style="color:var(--muted);">·</div><div class="rv">Any collab — would you post this if they weren't sending it to you?</div></div>
+  </div>
+</div>
+
+<!-- ══ HER CHART ══ -->
+<div class="view" id="view-her-chart">
+  <div class="pg-title">Her Chart</div>
+  <div class="pg-sub">Not a limitation. A map. Build with her nature, not against it.</div>
+  <div class="ch2"><div class="ch2-pl">Virgo Sun + Stellium</div><div class="ch2-mn">She will want to perfect everything before she posts.</div><div class="ch2-ap">Her Virgo Sun will see every flaw. The work is letting <strong>good enough and authentic beat perfect and delayed.</strong> Done is better than perfect. Post it.</div></div>
+  <div class="ch2"><div class="ch2-pl">Pisces Moon</div><div class="ch2-mn">She loves by dissolving. She gives before she is asked.</div><div class="ch2-ap">Her whole life she has been the one doing invisible emotional labor. @newe.reads is <strong>entirely hers.</strong> The moment it feels like she's pouring into something that doesn't pour back — we change it.</div></div>
+  <div class="ch2"><div class="ch2-pl">Libra Rising</div><div class="ch2-mn">Keeps the peace. Worries about how things land.</div><div class="ch2-ap">You will second-guess every caption. The content constitution exists so you don't have to decide alone. <strong>If it follows the rules — post it. Full stop.</strong></div></div>
+  <div class="ch2"><div class="ch2-pl">Aries Descendant</div><div class="ch2-mn">Drawn to fire and intensity.</div><div class="ch2-ap">In content: <strong>you don't chase trends that don't feel like you.</strong> You wait for the thing that is genuinely yours — then you own it completely.</div></div>
+  <div class="ch2"><div class="ch2-pl">Cancer MC</div><div class="ch2-mn">Her purpose is rooted in home, legacy, and found family.</div><div class="ch2-ap">@newe.reads is building something that lasts — a community that feels like <strong>found family</strong>, a life she designed on her own terms.</div></div>
+  <div class="card hi" style="margin-top:0.5rem;"><div class="cl">The through line</div><div class="cv" style="font-family:'Playfair Display',serif;font-style:italic;font-size:0.87rem;color:var(--espresso);line-height:1.78;">"You are not hard to love. You've been loving people who didn't know how to receive what you were giving." The same is true of your gifts. @newe.reads is where the right people finally receive them.</div></div>
+</div>
+
+<!-- ══ COMPASS ══ -->
+<div class="view" id="view-plan-now">
+  <div class="pg-title">Compass</div>
+  <div class="pg-sub">Where you are. What you built. What's next.</div>
+  <div class="now gap"><p>You are <span>pre-launch.</span> The foundation is built, the voice is yours, the hub is here. You showed up for yourself before a single person followed. <span>That counts.</span> Now you go public — not perfectly, but honestly and consistently. The moment it stops feeling like joy, we change it.</p></div>
+  <div class="g2 gap">
+    <div class="card hi"><div class="cl">Status</div><div class="cv" style="font-family:'Playfair Display',serif;font-size:1.02rem;color:var(--espresso);">Pre-launch</div><div class="cv" style="font-size:0.69rem;color:var(--camel);margin-top:0.22rem;">Foundation complete. Batch shoot is next.</div></div>
+    <div class="card"><div class="cl">The goal</div><div class="cv" style="font-family:'Playfair Display',serif;font-size:1.02rem;color:var(--espresso);">The ARC email.</div><div class="cv" style="font-size:0.69rem;color:var(--camel);margin-top:0.22rem;">An author event invite. Someone saying: she found her person.</div></div>
+  </div>
+  <div class="sec-lbl gap">What's done and what's next</div>
+  <div class="card gap">
+    <div class="row"><div class="rd d-done"></div><div class="rt" style="color:var(--olive);">Done</div><div class="rv">North star, foundation docs v4, palette, brief, bio — complete and saved to project</div></div>
+    <div class="row"><div class="rd d-done"></div><div class="rt" style="color:var(--olive);">Done</div><div class="rv">Full creative hub built — Her, Plan, Create, Her World, Brand</div></div>
+    <div class="row"><div class="rd d-done"></div><div class="rt" style="color:var(--olive);">Done</div><div class="rv">Five FMCs mapped with research, voice sheet, chart, rules, pitch</div></div>
+    <div class="row"><div class="rd d-done"></div><div class="rt" style="color:var(--olive);">Done</div><div class="rv">Profile picture built and ready to upload</div></div>
+    <div class="row"><div class="rd d-next"></div><div class="rt" style="color:var(--golden);">Next</div><div class="rv">Set up Instagram bio, highlights, and link-in-bio</div></div>
+    <div class="row"><div class="rd d-next"></div><div class="rt" style="color:var(--golden);">Next</div><div class="rv">Plan and execute first batch shoot — one creative evening, 4–6 weeks of content</div></div>
+    <div class="row"><div class="rd d-next"></div><div class="rt" style="color:var(--golden);">Next</div><div class="rv">Write Week 1 captions together in Create → Caption Workspace</div></div>
+    <div class="row"><div class="rd d-soon"></div><div class="rt">Then</div><div class="rv">Follow 20 bookstagram accounts and engage in their comments before first post</div></div>
+    <div class="row"><div class="rd d-later"></div><div class="rt">July</div><div class="rv">Show up for Chelsea Curto's In Stormy Weather launch week (July 16). Post, tag, engage. DM after.</div></div>
+  </div>
+
+  <div class="sec-lbl" style="margin-top:1rem;">Your Goodreads — connect it</div>
+  <div class="card" style="border-left:3px solid var(--sunshine);">
+    <div class="cl">How to link your reads so I can help prep content</div>
+    <div class="cv" style="font-size:0.77rem;line-height:1.95;">
+      Goodreads blocks automated fetching, but there is a clean workaround:<br><br>
+      <strong>1.</strong> Go to goodreads.com → My Books → Import and Export → Export Library<br>
+      <strong>2.</strong> Download the CSV file it generates<br>
+      <strong>3.</strong> Paste it into a new chat message here<br><br>
+      From that I can: map every book to a content pillar, draft review captions for your top reads, flag which books have author ARC opportunities, identify your taste patterns, and build a full content calendar around what you have actually read. Your profile is at <strong>goodreads.com/review/list/76129196</strong> — once you export I can do the rest.
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card"><div class="cl">Cadence</div><div class="row"><div class="rv"><strong>3 posts/week.</strong> Sustainable beats sporadic.</div></div><div class="row"><div class="rv">Stories daily when it feels natural — never forced</div></div><div class="row"><div class="rv">1 Reel/week from Week 2 — niche book thought, no edit, just say it</div></div></div>
+    <div class="card"><div class="cl">Protecting the joy</div><div class="row"><div class="rv">Always 4+ weeks of content ready. The backlog is what protects hard days.</div></div><div class="row"><div class="rv">One batch shoot per month = 4–6 weeks sorted</div></div><div class="row"><div class="rv">Placeholder slots for trends. Never scrambling.</div></div></div>
+  </div>
+</div>
+
+<!-- ══ MILESTONES ══ -->
+<div class="view" id="view-plan-milestones">
+  <div class="pg-title">Milestones 💛</div>
+  <div class="pg-sub">The moments that actually tell you it's working. Tap to mark when it happens.</div>
+  <div class="card dk gap"><div class="cv">Follower counts lie. <span>These don't.</span> These are the moments you'll remember.</div></div>
+
+  <div class="sec-lbl gap">You launched</div>
+  <div class="ms-card gap" id="ms-launch">
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">First post published</div><div class="ms-badge">Day 1</div></div>
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">All 6 content pillars posted at least once</div><div class="ms-badge">Week 3</div></div>
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">First Fashion x Books post live</div><div class="ms-badge">Week 1</div></div>
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">Bio and highlights set up</div><div class="ms-badge">Pre-launch</div></div>
+  </div>
+
+  <div class="sec-lbl gap">You were found</div>
+  <div class="ms-card gap" id="ms-found">
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">First comment from a stranger who felt seen</div><div class="ms-badge">Month 1</div></div>
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">First DM from someone saying "this is exactly what I needed"</div><div class="ms-badge">Month 1–2</div></div>
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">An author or bookstagrammer tags or reposts her</div><div class="ms-badge">Month 2–3</div></div>
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">Chelsea Curto sees her post</div><div class="ms-badge">July 16+</div></div>
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">First community comment thread that takes on a life of its own</div><div class="ms-badge">Month 1–2</div></div>
+  </div>
+
+  <div class="sec-lbl gap">You built something</div>
+  <div class="ms-card" id="ms-built">
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">The ARC email arrives ✨</div><div class="ms-badge">Month 3–6</div></div>
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">First affiliate sale</div><div class="ms-badge">Month 2–4</div></div>
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">An author event invite</div><div class="ms-badge">Month 4–6</div></div>
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">Someone says "I started reading X because of you"</div><div class="ms-badge">Month 2+</div></div>
+    <div class="ms-row" onclick="togMS(this)"><div class="ms-chk">★</div><div class="ms-txt">You look at your feed and it feels like you</div><div class="ms-badge">Always</div></div>
+  </div>
+  <div class="fn">The ARC email is not the arrival. It's the proof she was already there. 💛🌙</div>
+</div>
+
+<!-- ══ BUILD CHECKLIST ══ -->
+<div class="view" id="view-plan-build">
+  <div class="pg-title">Build Checklist</div>
+  <div class="pg-sub">Everything @newe.reads needs. Check off as we build together.</div>
+  <div class="prog-bar"><div class="prog-fill" id="pf" style="width:14%;"></div></div>
+  <div class="prog-lbl" id="pl" style="margin-bottom:1.2rem;">4 of 28 complete</div>
+  <div class="sec-lbl">Visual foundation</div>
+  <div class="card gap">
+    <div class="bi checked" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Color palette</div><div class="bs">Espresso to butter — complete with hex codes</div></div></div>
+    <div class="bi checked" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Visual identity direction</div><div class="bs">Parisian autumn, yellow soul, warm spring coloring</div></div></div>
+    <div class="bi checked" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Brand foundation documents</div><div class="bs">v4 complete and saved to project</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Batch shoot plan + shot list</div><div class="bs">What to shoot, how to style, which books to feature</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Props and styling guide</div><div class="bs">Candles, mugs, flowers, throws — gathered before first shoot</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Instagram highlights cover plan</div><div class="bs">Five highlight categories named and styled</div></div></div>
+  </div>
+  <div class="sec-lbl">Content — written</div>
+  <div class="card gap">
+    <div class="bi checked" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Bio</div><div class="bs">Same Newe girl, better books (but still a handful) — done</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Week 1 captions in her voice</div><div class="bs">Welcome carousel, Outfit + Drink + Book, Books That Match My Era</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Week 2–4 caption drafts</div><div class="bs">Fashion x Books, BookTok Made Me Read It, Trope Tuesday</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Hashtag strategy by content pillar</div><div class="bs">Researched sets for all five pillars</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Reel scripts — BookTok Made Me Read It</div><div class="bs">Conversational, specific, your voice — not a template</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Story templates and poll ideas</div><div class="bs">Spice level, HEA vs realistic, current read, behind the scenes</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Trope Tuesday card templates</div><div class="bs">Enemies to lovers, grumpy sunshine, second chance</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Fashion x Books pairing list</div><div class="bs">Outfits matched to characters — Nesta, Bryce, Piper, Persephone</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Vinyl series posts — all five characters</div><div class="bs">Nesta, Cara, Piper, Bryce, Persephone — caption template included</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Baking + audiobook content</div><div class="bs">"Ruhn Danaan had me making this at midnight" — specific recipes per book</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Her Story content guide</div><div class="bs">Arrival not injury, past tense, bright lines</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Full TBR mapped to content pillars</div><div class="bs">Always know which book is next and which pillar it feeds</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Seasonal content guide</div><div class="bs">Autumn and winter ideas for when the aesthetic is at peak power</div></div></div>
+  </div>
+  <div class="sec-lbl">Strategy</div>
+  <div class="card">
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Community engagement strategy</div><div class="bs">Which hashtags to follow, how to show up before you have followers</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">ARC outreach templates</div><div class="bs">Chelsea Curto first — warm, genuine, specific to her books</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Author outreach timeline</div><div class="bs">When to reach out based on release dates and content posted</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Cross-promotion plan</div><div class="bs">How and when to bring her existing community over</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Six month milestone markers</div><div class="bs">What success looks like at 1, 3, and 6 months — beyond follower counts</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Monetization roadmap</div><div class="bs">Affiliate, brand partnerships, LTK, Substack — realistic timeline</div></div></div>
+    <div class="bi" onclick="tog(this)"><div class="bchk">✓</div><div><div class="bm">Media kit</div><div class="bs">One-pager for brand and author outreach — when 60+ days of content exists</div></div></div>
+  </div>
+</div>
+
+
+<!-- SPRINT ROADMAP -->
+<div class="view" id="view-plan-roadmap">
+  <div class="pg-title">Sprint Roadmap 🗺</div>
+  <div class="pg-sub">Your PM brain deserves a real roadmap. Sprints, epics, clear definition of done.</div>
+  <div class="card dk gap"><div class="cv">You are a Scrum Master who reads romantasy. <span>That is a superpower.</span> This account runs like a product — epics, sprints, clear success criteria. No vague "post more." What, when, done means done.</div></div>
+
+  <div class="sec-lbl gap">The epics (big bets — each one unlocks the next)</div>
+  <div style="display:flex;flex-direction:column;gap:0.5rem;" class="gap">
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--olive);">Epic 1 — Foundation Live</div><div class="acc-meta">Status: DONE ✓ · Definition of done: account exists, looks right, has content</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+      <div style="font-size:0.75rem;color:var(--muted);line-height:1.7;margin-bottom:0.5rem;">North star written. Voice found. Palette locked. Bio ready. Hub built. Five FMCs mapped. This epic is closed.</div>
+      <div style="font-size:0.72rem;font-weight:600;color:var(--olive);">DONE: North star · Bio · Palette · FMC map · Hub · Voice sheet · Rules · ARC templates · Hashtag banks · Shot list</div>
+    </div></div></div>
+
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--golden);">Epic 2 — First Content Sprint</div><div class="acc-meta">Status: IN PROGRESS · Target: before July 16</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+      <div style="font-size:0.75rem;color:var(--muted);line-height:1.7;margin-bottom:0.75rem;">Definition of done: bio + highlights live, 6 posts drafted, 1 batch shoot complete, posting rhythm established.</div>
+      <div style="display:flex;flex-direction:column;gap:0.3rem;">
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--golden);font-weight:700;">→</span><span>Set up Instagram bio, link-in-bio (Linktree or Beacons), 5 highlight covers</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--golden);font-weight:700;">→</span><span>Batch shoot — Nesta outfit, 3x Outfit+Drink+Book, vinyl setup, Bryce outfit</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--golden);font-weight:700;">→</span><span>Write 6 captions in Caption Workspace (Fashion, Lifestyle, Reviews)</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--golden);font-weight:700;">→</span><span>Follow 20 bookstagram accounts and engage in their comments before launch</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--golden);font-weight:700;">→</span><span>Post first in-feed post. Just post it. Her Story — the intro.</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--golden);font-weight:700;">→</span><span>First Reel in Week 2 — one niche book thought, no edit, Bryce energy</span></div>
+      </div>
+    </div></div></div>
+
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--camel);">Epic 3 — Chelsea Curto Moment</div><div class="acc-meta">Status: PLANNED · Target: July 16, 2026 — her traditional publishing debut</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+      <div style="font-size:0.75rem;color:var(--muted);line-height:1.7;margin-bottom:0.75rem;">Definition of done: In Stormy Weather post live with her tagged, account has at least 3 weeks of prior content for her to see when she clicks the profile. DM sent after you've been visible in her community.</div>
+      <div style="display:flex;flex-direction:column;gap:0.3rem;">
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--camel);font-weight:700;">→</span><span>Show up in Chelsea's community before July 16 — engage genuinely, be visible</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--camel);font-weight:700;">→</span><span>Write In Stormy Weather caption using Piper Mitchell framing</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--camel);font-weight:700;">→</span><span>Post during launch week — tag her in the post, not just the caption</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--camel);font-weight:700;">→</span><span>Wait 24–48 hours. Then send the DM from Create → ARC Outreach. Lead with Sin Bin.</span></div>
+      </div>
+    </div></div></div>
+
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--chocolate);">Epic 4 — Community Formation</div><div class="acc-meta">Status: PLANNED · Target: Month 2–3</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+      <div style="font-size:0.75rem;color:var(--muted);line-height:1.7;margin-bottom:0.75rem;">Definition of done: consistent comment thread activity, at least one stranger DM, Trope Tuesday recurring, engagement rate above 3%.</div>
+      <div style="display:flex;flex-direction:column;gap:0.3rem;">
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--chocolate);font-weight:700;">→</span><span>Launch Trope Tuesday as a recurring weekly series</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--chocolate);font-weight:700;">→</span><span>Reply to every single comment in the first 30 minutes of posting</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--chocolate);font-weight:700;">→</span><span>Run first poll in Stories — spice level or trope bracket</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--chocolate);font-weight:700;">→</span><span>BookTok Made Me Read It first Reel — 15–30 seconds, your voice</span></div>
+      </div>
+    </div></div></div>
+
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--burgundy);">Epic 5 — ARC Email</div><div class="acc-meta">Status: PLANNED · Target: Month 3–6</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+      <div style="font-size:0.75rem;color:var(--muted);line-height:1.7;margin-bottom:0.75rem;">Definition of done: receive ARC or direct author outreach from a publisher or author not previously contacted. This is the proof of concept.</div>
+      <div style="display:flex;flex-direction:column;gap:0.3rem;">
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--burgundy);font-weight:700;">→</span><span>Scarlett St. Clair outreach — after Persephone content is live</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--burgundy);font-weight:700;">→</span><span>Rebecca Yarros outreach — ahead of Nov Peculiar Stars</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--burgundy);font-weight:700;">→</span><span>Apply to NetGalley as a reviewer once 60 days of content exists</span></div>
+        <div style="display:flex;gap:0.5rem;font-size:0.74rem;"><span style="color:var(--burgundy);font-weight:700;">→</span><span>Set up LTK and Bookshop.org affiliate links</span></div>
+      </div>
+    </div></div></div>
+  </div>
+
+  <div class="sec-lbl gap">Posting cadence — the honest data</div>
+  <div class="card gap">
+    <div class="cl">What the research actually says</div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv"><strong>3 posts/week is the move.</strong> Accounts posting 3–5x/week more than double follower growth vs. 1–2x. Your friend is right that 2x is the floor — not the target.</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv"><strong>But quality over volume.</strong> Instagram 2026 ranks by "sends per reach" — how often people DM your post to a friend. One post that makes someone say "I need to send this" beats five generic posts every time.</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv"><strong>Best posting times:</strong> Tuesday 1–7pm, Wednesday 12–9pm, Thursday 12–2pm. Midweek afternoons. Not weekends, not mornings.</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv"><strong>Carousels outperform everything</strong> on engagement. Your Fashion x Books paired looks and FMC deep dives should almost always be carousels.</div></div>
+    <div class="row"><div class="ri" style="color:var(--muted);">·</div><div class="rv"><strong>The verdict on your friend:</strong> Listen — but on your terms. Move from 2 to 3 posts/week. Make one of those a Story-heavy day with no feed post. Do not go daily until you have a full content engine running.</div></div>
+  </div>
+
+  <div class="sec-lbl gap">Your weekly sprint template</div>
+  <div class="card">
+    <div class="cv" style="font-size:0.77rem;line-height:2.1;">
+      <strong>Tuesday:</strong> Fashion x Books carousel (peak engagement day, lead with your strongest content)<br>
+      <strong>Thursday:</strong> Reviews + Recs or Lifestyle (people reading during their commute home)<br>
+      <strong>Sunday:</strong> Community post — Trope Tuesday, poll, or BookTok Made Me Read It (Sunday scroll energy)<br>
+      <strong>Daily Stories:</strong> Behind the scenes, current read check-in, poll, share a post from a creator you love<br>
+      <strong>Batch shoot:</strong> One Sunday per month. 3–4 hours = 4–6 weeks of visual content.
+    </div>
+  </div>
+
+  <div class="sec-lbl gap">Automatable and repeatable (things to pull or set up)</div>
+  <div class="card">
+    <div class="row"><div class="ri" style="color:var(--camel);">🔗</div><div class="rv"><strong>Linktree or Beacons:</strong> Set up once, update weekly. Link to Bookshop.org affiliate list, LTK, latest post, and Goodreads. This is your income infrastructure from day 1.</div></div>
+    <div class="row"><div class="ri" style="color:var(--camel);">📅</div><div class="rv"><strong>Later or Buffer (free tier):</strong> Schedule all 3 weekly posts in one sitting on Sunday. Never post in the moment for feed content — schedule everything so you can show up fresh in comments.</div></div>
+    <div class="row"><div class="ri" style="color:var(--camel);">📊</div><div class="rv"><strong>Weekly Instagram Insights check (10 min every Monday):</strong> Top post by saves, top post by reach, follower growth, story views. Saves = content people want to return to. That is your north star metric.</div></div>
+    <div class="row"><div class="ri" style="color:var(--camel);">📚</div><div class="rv"><strong>Goodreads export (monthly):</strong> Go to My Books → Import/Export → Export Library → paste the CSV here. I will map your reads to content pillars, draft review captions, and flag ARC-adjacent authors automatically.</div></div>
+    <div class="row"><div class="ri" style="color:var(--camel);">🔔</div><div class="rv"><strong>Author release alerts:</strong> Follow your priority authors on Goodreads and set notifications. The hub release radar covers July–November — update it here each quarter.</div></div>
+    <div class="row"><div class="ri" style="color:var(--camel);">💰</div><div class="rv"><strong>LTK + Bookshop.org:</strong> Apply to both before your first post. Even with 0 followers you can generate affiliate links. Every Fashion x Books post should have a linked outfit. Every review should link to Bookshop.</div></div>
+  </div>
+</div>
+
+<!-- ══ 6 MONTH ROADMAP ══ -->
+<div class="view" id="view-plan-6mo">
+  <div class="pg-title">6 Month Roadmap</div>
+  <div class="pg-sub">July through December. The full operating plan.</div>
+  <div class="card gap"><div class="cl">Author release radar</div>
+    <div class="rel"><div class="rel-d hot">Jul 16</div><div><div class="rel-t">In Stormy Weather</div><div class="rel-a">Chelsea Curto — traditional publishing debut</div><div class="rel-n">Show up for launch week genuinely. Post, tag, engage in community. DM after you've been visible.</div></div></div>
+    <div class="rel"><div class="rel-d">Sep 29</div><div><div class="rel-t">Untitled Empyrean Novella</div><div class="rel-a">Rebecca Yarros</div><div class="rel-n">Huge BookTok moment. Start teasing in August.</div></div></div>
+    <div class="rel"><div class="rel-d">Oct 6</div><div><div class="rel-t">Coiled at the Roots</div><div class="rel-a">Scarlett St. Clair</div><div class="rel-n">Persephone's author. Outreach after Persephone content goes live.</div></div></div>
+    <div class="rel"><div class="rel-d">Nov 17</div><div><div class="rel-t">Peculiar Stars</div><div class="rel-a">Rebecca Yarros</div><div class="rel-n">Slow burn castaway romance — fashion opportunity.</div></div></div>
+    <div class="rel"><div class="rel-d">Nov 25</div><div><div class="rel-t">Weak Side + Cross Check</div><div class="rel-a">Chelsea Curto</div><div class="rel-n">Double drop week. Big community moment.</div></div></div>
+  </div>
+  <div class="sec-lbl gap">Month by month</div>
+  <div style="display:flex;flex-direction:column;gap:0.5rem;" class="gap">
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">July — She Arrives</div><div class="acc-meta">Launch month · Chelsea Curto drop July 14</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;font-size:0.78rem;color:var(--muted);line-height:1.7;">Welcome carousel. First Fashion x Books. Chelsea Curto In Stormy Weather live content and DM. 3 posts/week, stories daily. This is the month the account becomes real. Energy: Daytime Bryce walking into Lunathion. She's here. She's not hiding.</div></div></div>
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">August — She Shows Up</div><div class="acc-meta">Consistency month · Community starts forming</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;font-size:0.78rem;color:var(--muted);line-height:1.7;">Breathe With Me review. Cara vinyl post. Trope Tuesday begins. First ARC manifesting carousel. Community engagement ramping up. Yarros novella teasing starts. First Reel if not started in July.</div></div></div>
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">September — Power Season</div><div class="acc-meta">Yarros novella drop · Peak romantasy content</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;font-size:0.78rem;color:var(--muted);line-height:1.7;">Power Play + Piper Mitchell deep dive. ACOSF Nesta spotlight. Yarros novella drop Sep 29. Autumn aesthetic fully live. The account starts looking like itself at peak power.</div></div></div>
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">October — Peak Autumn</div><div class="acc-meta">Most editorial content of the year · St. Clair drop</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;font-size:0.78rem;color:var(--muted);line-height:1.7;">Persephone series deep dive. Coiled at the Roots Oct 6. Candle-lit flatlays, camel and burgundy, ACOTAR season. The aesthetic is at its absolute peak — lean in hard. Scarlett St. Clair outreach.</div></div></div>
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">November — The Community Knows Her</div><div class="acc-meta">Curto double drop · First brand partnership convos</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;font-size:0.78rem;color:var(--muted);line-height:1.7;">4-month milestone check. Peculiar Stars Nov 17. Weak Side + Cross Check double drop Nov 25. Big community moment. First real conversations about brand partnerships and affiliates. The account is real now.</div></div></div>
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">December — She's Home</div><div class="acc-meta">6-month reflection · Final ARC outreach wave</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;font-size:0.78rem;color:var(--muted);line-height:1.7;">Six month reflection post. Final ARC outreach wave. "Books that made my year" carousel. The email could come any day now. You look back at the feed and see yourself. That is the whole thing.</div></div></div>
+  </div>
+</div>
+
+<!-- ══ VISION ══ -->
+<div class="view" id="view-plan-vision">
+  <div class="pg-title">Vision</div>
+  <div class="pg-sub">Not a deadline. A direction. Four horizons — built one beautiful day at a time.</div>
+  <div class="card dk gap"><div class="cv">She didn't start this account because she had it all figured out. She started it because she came out the other side still a romantic — and decided that was worth sharing. <span>Everything else followed.</span></div></div>
+  <div class="hz" style="border-left-color:var(--oat);"><div class="hz-yr">6 Months — The proof of concept</div><div class="hz-title">She shows up and is found</div><div class="hz-desc">The account is real, consistent, and joyful. The right women are finding her. The industry is starting to notice.</div><div class="hz-item">The ARC email arrives</div><div class="hz-item">A community that feels like something</div><div class="hz-item">First affiliate income — Amazon, Bookshop.org</div><div class="hz-item">The account brings genuine joy every single week</div></div>
+  <div class="hz" style="border-left-color:var(--camel);"><div class="hz-yr">Year 1 — The account that makes the right women feel found</div><div class="hz-title">A name in the bookstagram world</div><div class="hz-desc">The community has formed. Authors are requesting her specifically. She has a body of work she is proud of.</div><div class="hz-item">Regular ARCs from publishers she loves</div><div class="hz-item">An author event invite — someone says her name in a room</div><div class="hz-item">LTK set up and earning from fashion x books content</div><div class="hz-item">A community that feels like found family</div><div class="hz-item">A Substack or Patreon for deeper content — if it feels right</div></div>
+  <div class="hz" style="border-left-color:var(--chocolate);"><div class="hz-yr">Year 2 — Brands find her. The work pays her.</div><div class="hz-title">Two industries want to work with her</div><div class="hz-desc">Publishing AND fashion. That is her unfair advantage — nobody else is doing both with this specificity and voice.</div><div class="hz-item">Paid brand partnerships — bookish boxes, candle companies, reading accessories</div><div class="hz-item">Fashion brand collabs aligned with the Parisian autumn aesthetic</div><div class="hz-item">Sponsored content for book releases from publishers</div><div class="hz-item">Consistent monthly income from multiple streams</div></div>
+  <div class="hz" style="border-left-color:var(--sunshine);"><div class="hz-yr">Year 3 — She has built something</div><div class="hz-title">A life she designed</div><div class="hz-desc">She looks back and sees that she built this — one specific, authentic, joyful post at a time.</div><div class="hz-item">Speaking at bookish events and author signings</div><div class="hz-item">Her own product — a reading journal, a style guide, her own event</div><div class="hz-item">A community of women who found themselves through finding her</div><div class="hz-item">Income that supplements or replaces her 9-to-5 if she wants it to</div></div>
+  <div class="fn">Life begins at the end of your comfort zone. 💛🌙</div>
+</div>
+
+<!-- ══ COMP ACCOUNTS ══ -->
+<div class="view" id="view-plan-comps">
+  <div class="pg-title">Comp Accounts</div>
+  <div class="pg-sub">She studies these — not to copy, but to understand the landscape and the gap she fills.</div>
+  <div class="card dk gap"><div class="cv">The gap: most bookstagram is <span>either</span> beautiful and impersonal, <span>or</span> warm and visually unpolished. Nobody is doing fashion editorial quality + deep reader personal voice + the full sensory world of reading. <span>That is you.</span></div></div>
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">Parisian-aesthetic bookstagram</div><div class="acc-meta">e.g. @ashleighhhhreads · Visual cousin · Warm neutrals</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;"><div class="cc-tag">Visual cousin</div><div class="cc-tag">Warm palette</div><div class="cc-tag">Editorial</div><div class="cc-desc">Closest visual match to @newe.reads. Rich neutrals, books styled with intention. Captions shorter and less personal than Haley's will be.</div><div class="cc-learn">What to learn: <span>Flatlay setups and natural lighting. What you add: fashion editorial perspective, character styling specificity, and a personal voice that makes people stay.</span></div></div></div></div>
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">BookTok-crossover bookstagram</div><div class="acc-meta">e.g. @bellesbookshelf · Community-first · High engagement</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;"><div class="cc-tag">BookTok overlap</div><div class="cc-tag">Community-first</div><div class="cc-tag">High engagement</div><div class="cc-desc">Strong community feel. High comment engagement from genuine warmth. Her romance readership is here. The aesthetic isn't editorial.</div><div class="cc-learn">What to learn: <span>How they build comment culture. The specific questions that drive engagement. What you add: elevated visual aesthetic and the fashion differentiator.</span></div></div></div></div>
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">Literary lifestyle bookstagram</div><div class="acc-meta">e.g. @mythoughtsarestars · Personal voice · Sensory world</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;"><div class="cc-tag">Lifestyle angle</div><div class="cc-tag">Sensory world</div><div class="cc-tag">Personal voice</div><div class="cc-desc">Shares a reading life not just a reading list. Coffee setups, reading nooks, the feeling of being inside a book.</div><div class="cc-learn">What to learn: <span>How lifestyle content feels bookish, not like a food or interior account. What you add: vinyl, fashion, and the Her Story pillar.</span></div></div></div></div>
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">@tata.lifepages</div><div class="acc-meta">~275K followers · Scale proof · Lifestyle-forward</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;"><div class="cc-tag">Scale proof</div><div class="cc-tag">Lifestyle-first</div><div class="cc-tag">BookTok</div><div class="cc-desc">Proof that lifestyle-forward book content scales. Strong visual identity. Your version will be more specific, more personal, more romantasy-focused.</div><div class="cc-learn">What to learn: <span>How editorial lifestyle content drives following at scale. What you add: the fashion x books differentiator and the specific romantasy community.</span></div></div></div></div>
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">Chelsea Curto's reader community</div><div class="acc-meta">Priority ARC target · In Stormy Weather July 14</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;"><div class="cc-tag">ARC target</div><div class="cc-tag">Sports romance</div><div class="cc-tag">Study pre-outreach</div><div class="cc-desc">Study how Chelsea engages with her reader community, what she reposts, what gets her attention. Essential pre-outreach research.</div><div class="cc-learn">Goal: <span>Be the kind of account Chelsea wants to tag.</span></div></div></div></div>
+</div>
+
+<!-- ══ CAPTION WORKSPACE ══ -->
+<div class="view" id="view-create-cap">
+  <div class="pg-title">Caption Workspace</div>
+  <div class="pg-sub">Write in your voice. Save it. Build your library one caption at a time.</div>
+  <div class="ws">
+    <div class="ws-hd"><div class="ws-t">New Caption</div><div class="ws-b" id="ws-pillar-badge">Fashion x Books</div></div>
+    <div class="ws-bd">
+      <div class="ws-lbl">Select pillar</div>
+      <div class="pills">
+        <div class="pill active" onclick="selPill(this,'Fashion x Books')">Fashion x Books</div>
+        <div class="pill" onclick="selPill(this,'Reviews + Recs')">Reviews + Recs</div>
+        <div class="pill" onclick="selPill(this,'Lifestyle')">Lifestyle</div>
+        <div class="pill" onclick="selPill(this,'Community')">Community</div>
+        <div class="pill" onclick="selPill(this,'Her Story')">Her Story</div>
+        <div class="pill" onclick="selPill(this,'Vinyl')">Vinyl ♪</div>
+      </div>
+      <div class="ws-lbl">Write in her voice</div>
+      <textarea class="ws-ta" id="cdraft" placeholder="Start writing here — specific details, past tense for personal content, always end with a real question...&#10;&#10;Remember: wise older sister. You share, you don't teach." oninput="updCC()"></textarea>
+      <div class="char-count" id="cc-count">0 characters</div>
+      <div class="ws-acts">
+        <button class="ws-btn pr" onclick="saveDraft()">Save Draft 💛</button>
+        <button class="ws-btn se" onclick="clearDraft()">Clear</button>
+      </div>
+    </div>
+  </div>
+  <div class="card hi"><div class="cl">Voice check before you save</div><div class="cv" style="font-size:0.77rem;line-height:1.88;">✦ Is there a specific detail? (time, feeling, exact moment)<br>✦ Does it share rather than lecture?<br>✦ Is personal content past tense — arrived, not inside it?<br>✦ Does it end with a real question her audience will want to answer?<br>× Did the Libra Rising edit it down too much? Put it back.</div></div>
+</div>
+
+<!-- ══ SAVED DRAFTS ══ -->
+<div class="view" id="view-create-drafts">
+  <div class="pg-title">Saved Drafts</div>
+  <div class="pg-sub">Every caption saved here. Tap to copy. Mark ready when it's good to go.</div>
+  <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;" id="draft-filters">
+    <div class="pill active" onclick="filterDrafts('all',this)">All</div>
+    <div class="pill" onclick="filterDrafts('Fashion x Books',this)">Fashion x Books</div>
+    <div class="pill" onclick="filterDrafts('Reviews + Recs',this)">Reviews + Recs</div>
+    <div class="pill" onclick="filterDrafts('Lifestyle',this)">Lifestyle</div>
+    <div class="pill" onclick="filterDrafts('Community',this)">Community</div>
+    <div class="pill" onclick="filterDrafts('Her Story',this)">Her Story</div>
+  </div>
+  <div id="draft-list"></div>
+  <div id="draft-empty" class="card" style="border:2px dashed rgba(176,123,82,0.25);background:transparent;text-align:center;padding:2rem;display:none;"><div style="font-family:'Playfair Display',serif;font-style:italic;font-size:0.9rem;color:var(--muted);line-height:1.78;">No drafts yet.<br><span style="color:var(--camel);">Go to Caption Workspace to write the first one.</span></div></div>
+</div>
+
+<!-- ══ WEEK PLANNER ══ -->
+<div class="view" id="view-create-week">
+  <div class="pg-title">Week Planner 🗓</div>
+  <div class="pg-sub">Plan what goes out this week. Check your pillar balance before you post.</div>
+
+  <!-- Pillar gap tracker -->
+  <div class="sec-lbl gap">Content gap check — this week</div>
+  <div class="card gap">
+    <div class="cv" style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;">Click a pillar to log a post. The rings show where you're light.</div>
+    <div class="gap-track" id="gap-tracker">
+      <div class="gap-dot"><div class="gap-ring" id="gr-fashion" style="background:rgba(59,35,20,0.08);color:var(--espresso);"><svg width="42" height="42" viewBox="0 0 42 42"><circle cx="21" cy="21" r="17" fill="none" stroke="rgba(176,123,82,0.15)" stroke-width="3"/><circle id="gc-fashion" cx="21" cy="21" r="17" fill="none" stroke="var(--espresso)" stroke-width="3" stroke-dasharray="0 107" stroke-linecap="round" transform="rotate(-90 21 21)" style="transition:stroke-dasharray 0.4s;"/></svg><div class="gap-ring-num" id="gn-fashion">0</div></div><div class="gap-name">Fashion × Books</div></div>
+      <div class="gap-dot"><div class="gap-ring" id="gr-reviews" style="background:rgba(123,74,45,0.08);color:var(--chocolate);"><svg width="42" height="42" viewBox="0 0 42 42"><circle cx="21" cy="21" r="17" fill="none" stroke="rgba(176,123,82,0.15)" stroke-width="3"/><circle id="gc-reviews" cx="21" cy="21" r="17" fill="none" stroke="var(--chocolate)" stroke-width="3" stroke-dasharray="0 107" stroke-linecap="round" transform="rotate(-90 21 21)" style="transition:stroke-dasharray 0.4s;"/></svg><div class="gap-ring-num" id="gn-reviews">0</div></div><div class="gap-name">Reviews + Recs</div></div>
+      <div class="gap-dot"><div class="gap-ring" id="gr-lifestyle" style="background:rgba(176,123,82,0.08);color:var(--camel);"><svg width="42" height="42" viewBox="0 0 42 42"><circle cx="21" cy="21" r="17" fill="none" stroke="rgba(176,123,82,0.15)" stroke-width="3"/><circle id="gc-lifestyle" cx="21" cy="21" r="17" fill="none" stroke="var(--camel)" stroke-width="3" stroke-dasharray="0 107" stroke-linecap="round" transform="rotate(-90 21 21)" style="transition:stroke-dasharray 0.4s;"/></svg><div class="gap-ring-num" id="gn-lifestyle">0</div></div><div class="gap-name">Lifestyle</div></div>
+      <div class="gap-dot"><div class="gap-ring" id="gr-community" style="background:rgba(74,82,64,0.08);color:var(--olive);"><svg width="42" height="42" viewBox="0 0 42 42"><circle cx="21" cy="21" r="17" fill="none" stroke="rgba(176,123,82,0.15)" stroke-width="3"/><circle id="gc-community" cx="21" cy="21" r="17" fill="none" stroke="var(--olive)" stroke-width="3" stroke-dasharray="0 107" stroke-linecap="round" transform="rotate(-90 21 21)" style="transition:stroke-dasharray 0.4s;"/></svg><div class="gap-ring-num" id="gn-community">0</div></div><div class="gap-name">Community</div></div>
+      <div class="gap-dot"><div class="gap-ring" id="gr-story" style="background:rgba(107,39,55,0.08);color:var(--burgundy);"><svg width="42" height="42" viewBox="0 0 42 42"><circle cx="21" cy="21" r="17" fill="none" stroke="rgba(176,123,82,0.15)" stroke-width="3"/><circle id="gc-story" cx="21" cy="21" r="17" fill="none" stroke="var(--burgundy)" stroke-width="3" stroke-dasharray="0 107" stroke-linecap="round" transform="rotate(-90 21 21)" style="transition:stroke-dasharray 0.4s;"/></svg><div class="gap-ring-num" id="gn-story">0</div></div><div class="gap-name">Her Story</div></div>
+    </div>
+    <div id="gap-advice" class="card hi" style="margin-top:0.5rem;font-size:0.76rem;color:var(--espresso);line-height:1.6;display:none;"></div>
+  </div>
+
+  <!-- Week grid -->
+  <div class="sec-lbl gap">This week's posts</div>
+  <div class="week-grid" id="week-grid">
+    <div class="day-cell" id="day-mon" onclick="openModal('Monday')"><div class="day-label">Mon</div><div class="day-add">+ add</div></div>
+    <div class="day-cell" id="day-tue" onclick="openModal('Tuesday')"><div class="day-label">Tue</div><div class="day-add">+ add</div></div>
+    <div class="day-cell" id="day-wed" onclick="openModal('Wednesday')"><div class="day-label">Wed</div><div class="day-add">+ add</div></div>
+    <div class="day-cell" id="day-thu" onclick="openModal('Thursday')"><div class="day-label">Thu</div><div class="day-add">+ add</div></div>
+    <div class="day-cell" id="day-fri" onclick="openModal('Friday')"><div class="day-label">Fri</div><div class="day-add">+ add</div></div>
+    <div class="day-cell" id="day-sat" onclick="openModal('Saturday')"><div class="day-label">Sat</div><div class="day-add">+ add</div></div>
+    <div class="day-cell" id="day-sun" onclick="openModal('Sunday')"><div class="day-label">Sun</div><div class="day-add">+ add</div></div>
+  </div>
+
+  <div class="card"><div class="cl">Ideal week pattern</div><div class="cv" style="font-size:0.76rem;line-height:1.9;">✦ <strong>Tuesday</strong> — Fashion x Books or Lifestyle (peak mid-week engagement, highest saves)<br>✦ <strong>Thursday</strong> — Reviews + Recs or Her Story (weekend readers settling in)<br>✦ <strong>Sunday</strong> — Community: polls, ship wars, reading questions (Sunday scroll = conversation energy)<br>· Trope Tuesday lives on <strong>Tuesday</strong> — not Sunday. Name means something.<br>· Stories daily when it feels natural. Never forced.<br>· Reel: swap one feed post per week once you hit month 2</div></div>
+</div>
+
+<!-- ══ BIO BUILDER ══ -->
+<div class="view" id="view-create-bio">
+  <div class="pg-title">Bio Builder</div>
+  <div class="pg-sub">Iterate on how she introduces herself. Tap a version to preview it.</div>
+
+  <div class="bio-preview">
+    <div class="bio-handle">@newe.reads</div>
+    <div class="bio-name">Haley</div>
+    <div class="bio-text" id="bio-live">Same Newe girl, better books (but still a handful). Romance and fantasy lover styling outfits inspired by reads that wreck her heart in the best way. A little spring, a little shadow, a lot of hopeless romantic. DM for collabs and ARCs.</div>
+    <div class="bio-char" id="bio-char-count">147 / 150 chars</div>
+  </div>
+
+  <div class="sec-lbl gap">Edit live bio</div>
+  <textarea class="bio-input" id="bio-edit" rows="4" oninput="updBio(this.value)" style="margin-bottom:0.5rem;">Same Newe girl, better books (but still a handful). Romance and fantasy lover styling outfits inspired by reads that wreck her heart in the best way. A little spring, a little shadow, a lot of hopeless romantic. DM for collabs and ARCs.</textarea>
+  <button class="ws-btn pr" style="font-size:0.69rem;" onclick="cpBio()">Copy bio 💛</button>
+
+  <div class="sec-lbl" style="margin-top:1.2rem;">Saved versions — tap to preview</div>
+  <div class="bio-versions">
+    <div class="bio-v" onclick="setBio('Same Newe girl, better books (but still a handful). Romance and fantasy lover styling outfits inspired by reads that wreck her heart in the best way. A little spring, a little shadow, a lot of hopeless romantic. DM for collabs and ARCs.')">
+      <div class="bio-v-label">Current — Launch version</div>
+      <div class="bio-v-text">Same Newe girl, better books (but still a handful). Romance and fantasy lover styling outfits inspired by reads that wreck her heart in the best way. A little spring, a little shadow, a lot of hopeless romantic. DM for collabs and ARCs.</div>
+    </div>
+    <div class="bio-v" onclick="setBio('She came out the other side still a romantic. 📖 Romance + fantasy reader styling outfits after the books that wrecked her. A little spring, a little shadow. DM for ARCs + collabs. 💛')">
+      <div class="bio-v-label">Alt — Narrative-first version</div>
+      <div class="bio-v-text">She came out the other side still a romantic. 📖 Romance + fantasy reader styling outfits after the books that wrecked her. A little spring, a little shadow. DM for ARCs + collabs. 💛</div>
+    </div>
+    <div class="bio-v" onclick="setBio('Virgo who reads like a Pisces. 📖 Styling outfits after the FMCs who saved me. Romantasy + sports romance + whatever wrecks me this week. A little spring, a little shadow. DM for ARCs.')">
+      <div class="bio-v-label">Alt — FMC/astro version</div>
+      <div class="bio-v-text">Virgo who reads like a Pisces. 📖 Styling outfits after the FMCs who saved me. Romantasy + sports romance + whatever wrecks me this week. A little spring, a little shadow. DM for ARCs.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ WHEN I'M STUCK ══ -->
+<div class="view" id="view-create-stuck">
+  <div class="pg-title">When I'm Stuck 💡</div>
+  <div class="pg-sub">Writer's block is a liar. Pick a pillar and get a prompt in your voice.</div>
+
+  <div class="card dk gap"><div class="cv">The Virgo Sun will tell you nothing is good enough. The Libra Rising will edit it to death. The Pisces Moon knows exactly what to say. <span>This is for the days Pisces needs a little help getting started.</span></div></div>
+
+  <div class="sec-lbl gap">Pick your pillar</div>
+  <div class="pills gap">
+    <div class="pill active" onclick="setPromptPillar('Her Story',this)">Her Story</div>
+    <div class="pill" onclick="setPromptPillar('Fashion x Books',this)">Fashion x Books</div>
+    <div class="pill" onclick="setPromptPillar('Lifestyle',this)">Lifestyle</div>
+    <div class="pill" onclick="setPromptPillar('Reviews + Recs',this)">Reviews + Recs</div>
+    <div class="pill" onclick="setPromptPillar('Community',this)">Community</div>
+    <div class="pill" onclick="setPromptPillar('Vinyl',this)">Vinyl ♪</div>
+    <div class="pill" onclick="setPromptPillar('Short-Form / Reels',this)">Reels 🎬</div>
+  </div>
+
+  <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;" class="gap">
+    <button class="prompt-btn" onclick="genPrompt()">✦ Give me a prompt</button>
+    <button class="prompt-btn se" onclick="genPrompt()">Try another</button>
+  </div>
+
+  <div class="prompt-output" id="prompt-out">Tap the button above to get a writing prompt in your voice.</div>
+
+  <div class="sec-lbl" style="margin-top:1.2rem;">Or start with one of these</div>
+  <div class="card"><div class="cv" style="font-size:0.77rem;line-height:2.05;">✦ "What was I reading the week everything changed?" — Her Story<br>✦ "The outfit I put on when I need to feel like her." — Fashion x Books<br>✦ "This book found me at exactly the right time. Here is why." — Reviews + Recs<br>✦ "I made this at midnight because a book made me feel something." — Lifestyle<br>✦ "The record that sounds exactly like being inside this world." — Vinyl<br>✦ "The line I had to put the book down for." — Reviews + Recs<br>✦ "Enemies to lovers OR grumpy sunshine — pick a side." — Community<br>✦ "An outfit for the version of me living loudly." — Fashion x Books</div></div>
+</div>
+
+
+<!-- ELEVATOR PITCH -->
+<div class="view" id="view-create-pitch">
+  <div class="pg-title">Elevator Pitch 🎤</div>
+  <div class="pg-sub">Tap the room you are in. Get the version that fits.</div>
+  <div class="card dk gap"><div class="cv">You are bold with the people you trust. The work here is saying the true thing out loud, even when the Libra Rising wants to soften it. <span>She came out the other side still a romantic. That is the differentiator.</span></div></div>
+
+  <div class="sec-lbl gap">Who is on the other side of the room?</div>
+  <div class="pills gap" id="pitch-pills">
+    <div class="pill active" onclick="setPitch('author',this)">An author</div>
+    <div class="pill" onclick="setPitch('brand',this)">A brand</div>
+    <div class="pill" onclick="setPitch('follower',this)">A new follower</div>
+    <div class="pill" onclick="setPitch('friend',this)">A curious friend</div>
+    <div class="pill" onclick="setPitch('event',this)">At a bookish event</div>
+  </div>
+
+  <div id="pitch-display" class="card" style="border-left:3px solid var(--sunshine);padding:1.25rem 1.4rem;">
+    <div id="pitch-label" class="cl" style="margin-bottom:0.6rem;">For an author</div>
+    <div id="pitch-text" style="font-family:'Playfair Display',serif;font-size:0.92rem;color:var(--espresso);line-height:1.85;font-style:italic;"></div>
+    <div id="pitch-note" style="font-size:0.7rem;color:var(--camel);margin-top:0.75rem;line-height:1.55;font-style:normal;"></div>
+  </div>
+  <button class="ws-btn se" style="font-size:0.68rem;margin-top:0.5rem;" onclick="cpPitch()">Copy this pitch</button>
+
+  <div class="sec-lbl" style="margin-top:1.25rem;">The through line in every version</div>
+  <div class="card hi">
+    <div class="cv" style="font-size:0.78rem;line-height:1.95;">
+      ✦ You are not a book reviewer or a fashion influencer. You are a woman who became herself through the books she read.<br>
+      ✦ Your account exists at the intersection that nobody else is in: fashion editorial quality + deep personal voice + the full sensory life of a real reader.<br>
+      ✦ Your reader is specific: the woman who has been made smaller, still believes in love, and has been looking for someone who gets it without having to explain it.<br>
+      ✦ Wise older sister. She shares. She does not teach.
+    </div>
+  </div>
+
+  <div class="sec-lbl" style="margin-top:1rem;">The one sentence — for any room</div>
+  <div class="card" style="border-left:3px solid var(--sunshine);">
+    <div class="cv" style="font-family:'Playfair Display',serif;font-style:italic;font-size:0.93rem;color:var(--espresso);line-height:1.78;">
+      "I run @newe.reads — I style outfits after the books that wrecked me, for women who are still romantics even after everything."
+    </div>
+  </div>
+</div>
+
+<!-- GOODREADS MAP -->
+<div class="view" id="view-create-gr">
+  <div class="pg-title">Your Reads — Mapped</div>
+  <div class="pg-sub">87 books. Here is what your library says about your content strategy.</div>
+
+  <div class="card dk gap"><div class="cv">You have read <span>10 Chelsea Curto books.</span> You have read the entire ACOTAR series, entire Crescent City series, all 7 Hades x Persephone books, Iron Flame, Fourth Wing. This is full immersion, not sampling. <span>Your taste is your credibility and it is specific.</span></div></div>
+
+  <div class="g2 gap">
+    <div class="card hi"><div class="cl">Your library by genre</div><div class="cv" style="font-size:0.82rem;line-height:1.9;"><strong style="font-size:1.1rem;color:var(--espresso);">46</strong> sports romance<br><strong style="font-size:1.1rem;color:var(--espresso);">17</strong> romantasy<br><strong style="font-size:1.1rem;color:var(--espresso);">12</strong> contemporary / other<br><strong style="font-size:1.1rem;color:var(--espresso);">8</strong> currently reading</div></div>
+    <div class="card"><div class="cl">Your 5-star shelf</div><div class="cv" style="font-size:0.75rem;line-height:1.95;">House of Earth and Blood<br>Sin Bin — Chelsea Curto<br>Breathe With Me — Becka Mack<br>Iron Flame — Rebecca Yarros<br>A Touch of Darkness — St. Clair<br>Strong and Wild — Sloane St. James</div></div>
+  </div>
+
+  <div class="sec-lbl gap">What your taste tells us — content angles</div>
+  <div style="display:flex;flex-direction:column;gap:0.55rem;" class="gap">
+    <div class="card al" style="border-left-color:var(--sunshine);"><div class="cl">Chelsea Curto — you are her biggest reader</div><div class="cv" style="font-size:0.77rem;">You have read 10 of her books. Sin Bin is a 5-star. You read the entire DC Stars series AND the entire Love Through a Lens series. The DM you send her in July is not cold outreach — it is a reader who lived inside her world for a year writing to say so. Rewrite the template to lead with Sin Bin specifically.</div></div>
+    <div class="card al" style="border-left-color:var(--burgundy);"><div class="cl">SJM — you are in the middle of the world</div><div class="cv" style="font-size:0.77rem;">ACOTAR complete. Crescent City 1-2 done, CC3 currently reading. You have firsthand read-order opinions. "Do not start with ACOTAR, start with the one that matches where you are right now" is an entire content series from you.</div></div>
+    <div class="card al" style="border-left-color:var(--camel);"><div class="cl">Sports romance is your dominant genre</div><div class="cv" style="font-size:0.77rem;">46 books. You have read Elle Kennedy end to end, all of Liz Tomforde, all of Stephanie Archer, all of Becka Mack. "Books That Match My Era" series should lean heavily here — these are the books people are actively reading and looking for rec accounts in.</div></div>
+    <div class="card al" style="border-left-color:var(--olive);"><div class="cl">Found family is your through line</div><div class="cv" style="font-size:0.77rem;">Your 5-star books: Crescent City (Danika and Bryce), Sin Bin (team), Breathe With Me (the group), Iron Flame (the squad), A Touch of Darkness (building a world together). You do not give 5 stars to solo romantic arcs. You give 5 stars when the found family earns it.</div></div>
+    <div class="card al" style="border-left-color:var(--chocolate);"><div class="cl">ARC opportunity — Sloane St. James</div><div class="cv" style="font-size:0.77rem;">Strong and Wild is a 5-star. Of Ink and Alchemy is a 4-star. You are currently reading In the Game (Lakes Hockey #3). You have read enough of her work to reach out with a genuine specific reason. Add her to the ARC outreach list.</div></div>
+  </div>
+
+  <div class="sec-lbl gap">Content calendar fodder — ready to post</div>
+  <div class="card">
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv"><strong>Chelsea Curto ranking post</strong> — "I have read all 10 of her books. Here is the order I would read them in if you are new." Carousel. This is the post that gets you on her radar before July 14.</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv"><strong>SJM reading order opinion</strong> — "Everyone says start with ACOTAR. Here is what I actually think." Your real take after reading the whole universe.</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv"><strong>Sports romance starter pack</strong> — "If you have never read sports romance and you want to know where to start, it depends on which FMC energy you have right now." Map your reads to entry points.</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv"><strong>5-star shelf breakdown</strong> — "These are the six books I have given 5 stars. Here is what they all have in common." Found family thesis post. Her Story adjacent.</div></div>
+    <div class="row"><div class="ri" style="color:var(--sunshine);">✦</div><div class="rv"><strong>Iron Flame vs Fourth Wing</strong> — You gave Iron Flame 5 stars, Fourth Wing unrated. There is an opinion in there. Community post, poll format.</div></div>
+  </div>
+
+  <div class="sec-lbl" style="margin-top:0.75rem;">Update your reads</div>
+  <div class="card" style="border-left:3px solid var(--sunshine);"><div class="cv" style="font-size:0.77rem;line-height:1.9;">Export a fresh CSV anytime: Goodreads → My Books → Import and Export → Export Library. Paste it into a new message and I will re-map your full library to content angles, flag new ARC opportunities, and update this section. Your profile: <strong>goodreads.com/review/list/76129196</strong></div></div>
+</div>
+
+<!-- ══ HASHTAG BANKS ══ -->
+<div class="view" id="view-create-ht">
+  <div class="pg-title">Hashtag Banks</div>
+  <div class="pg-sub">Researched sets by pillar. Copy with one tap. Rotate sets to avoid shadowban.</div>
+  <div class="ht"><div class="ht-n">Fashion x Books — Core Set</div><div class="ht-tags">#bookstagram #bookfashion #booksandstyle #outfitinspired #bookaesthetic #romantasyreads #bookstyle #readersofinstagram #bibliophile #bookoutfit #fashionreader #bookishfashion #bookishstyle #fantasyfashion #romancereads</div><div class="ht-cp" onclick="cpHT(this)">Copy set</div></div>
+  <div class="ht"><div class="ht-n">Reviews + Recs — Romantasy Focus</div><div class="ht-tags">#bookstagram #romantasy #bookreview #bookrecommendations #romantasyreads #bookblogger #sarahjmaas #acotar #crescentcity #booktok #currentlyreading #bookrecs #fantasyromance #bookish #5starread</div><div class="ht-cp" onclick="cpHT(this)">Copy set</div></div>
+  <div class="ht"><div class="ht-n">Lifestyle — Reading Life</div><div class="ht-tags">#readinglife #bookishvibes #cozyreader #readingaesthetic #booknook #readersofinsta #bookandcoffee #readingcorner #bookstagrammer #readingcommunity #bookishlifestyle #readermood #cozybookstagram #slowliving #bookishmoment</div><div class="ht-cp" onclick="cpHT(this)">Copy set</div></div>
+  <div class="ht"><div class="ht-n">Community — Engagement Posts</div><div class="ht-tags">#tropeTuesday #bookclub #readingchallenge #bookrecommendation #booklovers #booknerds #bookworm #readerscommunity #bookdiscussion #whatshouldIreadnext #bookishcommunity #bookchat #bookopinion #readersofig #bookishpeople</div><div class="ht-cp" onclick="cpHT(this)">Copy set</div></div>
+  <div class="ht"><div class="ht-n">Chelsea Curto / Sports Romance — July 14 Drop</div><div class="ht-tags">#chelseacurto #instormyweather #sportsromance #hockeyromance #contemporaryromance #newrelease #bookstagram #romancereads #fakerelationship #accidentalmarriage #romancebooktok #chelseacurtobooks #DCstars #newbookrelease #arcreview</div><div class="ht-cp" onclick="cpHT(this)">Copy set</div></div>
+  <div class="card" style="margin-top:0.5rem;"><div class="cl">Rules</div><div class="cv" style="font-size:0.76rem;line-height:1.88;">· Rotate between sets — don't use identical sets back to back<br>· 15–20 per post is the sweet spot. Don't stuff.<br>· First comment or caption — first comment looks cleaner<br>· Mix large and small tags. All mega-hashtags = buried instantly.</div></div>
+</div>
+
+<!-- ══ ARC OUTREACH ══ -->
+<div class="view" id="view-create-arc">
+  <div class="pg-title">ARC Outreach</div>
+  <div class="pg-sub">Content first. Relationship always. The ask comes after she already knows you exist.</div>
+  <div class="card dk gap"><div class="cv">This isn't a priority list. It's two tracks running at once. <span>Track 1: content first, then DM.</span> Post about their world, tag thoughtfully, let them find you. <span>Track 2: watch the calendar.</span> Show up for their big moments. The ask comes naturally when the relationship is already there.</div></div>
+
+  <div class="arc"><div class="arc-nm">Chelsea Curto</div><div class="arc-st">Track 2 — Calendar moment. In Stormy Weather drops July 16 (her traditional publishing debut).</div><div class="arc-tpl" id="arc-chelsea">Hi Chelsea — I'm Haley, the creator behind @newe.reads. I'm a romance reader who shows up online the way Piper Mitchell shows up in a room — warm, specific, and done apologizing for taking up space. I've been reading your books for over a year and Sin Bin especially lives in my body the way only a handful of books do. I'd love to be considered for future titles — I think the women who follow me would feel found by your work the same way I did. Happy to share more about the account.</div><button class="ws-btn se" style="font-size:0.65rem;margin-top:0.3rem;" onclick="cpById('arc-chelsea',this)">Copy template</button>
+    <div class="arc-nt" style="margin-top:0.5rem;">Show up in her community before July 16. Post launch week content. Tag her in the post. Wait 24–48 hrs. Then DM. Lead with Sin Bin — warm outreach, not cold.</div></div>
+
+  <div class="arc" style="border-top-color:var(--camel);"><div class="arc-nm">Scarlett St. Clair</div><div class="arc-st">Track 1 — Persephone content first. Outreach ahead of Coiled at the Roots (Oct 6).</div><div class="arc-tpl" id="arc-scarlett">Hi Scarlett — I'm Haley from @newe.reads, where I style outfits inspired by the worlds I read. I've read the Hades x Persephone series all seven books, and Persephone is one of the five characters who form the identity of my account — the one who learned to hold both worlds without choosing. I'd love to be considered for upcoming titles. Happy to share the account so you can see what I'm building.</div><button class="ws-btn se" style="font-size:0.65rem;margin-top:0.3rem;" onclick="cpById('arc-scarlett',this)">Copy template</button>
+    <div class="arc-nt" style="margin-top:0.5rem;">Build Persephone deep dive content and vinyl post first. She needs to see the love before the ask.</div></div>
+
+  <div class="arc" style="border-top-color:var(--olive);"><div class="arc-nm">Brittanee Nicole</div><div class="arc-st">Track 1 — Your most-read author (11 books, all 5 stars). Content first: Boston Bolts universe / reading order angle.</div><div class="arc-tpl" id="arc-brittanee">Hi Brittanee — I'm Haley from @newe.reads. I've read every book in your Boston Bolts and Revenge Games universes, and the thing that makes your writing different from every other sports romance author is that you build a universe where the characters carry real history with each other. I post about that — the reading order, the found family, why knowing Hockey Boy's whole story before you read Beauty changes everything. I'd love to be considered for upcoming releases. Happy to share the account.</div><button class="ws-btn se" style="font-size:0.65rem;margin-top:0.3rem;" onclick="cpById('arc-brittanee',this)">Copy template</button>
+    <div class="arc-nt" style="margin-top:0.5rem;">Post the Boston Bolts universe reading order Reel first. Tag her. Let her see you understand what she built. Then DM.</div></div>
+
+  <div class="arc" style="border-top-color:var(--burgundy);"><div class="arc-nm">Sloane St. James</div><div class="arc-st">Track 1 — Strong and Wild 5-star. Currently reading In the Game (Lakes Hockey #3).</div><div class="arc-tpl" id="arc-sloane">Hi Sloane — I'm Haley from @newe.reads. Strong and Wild was a 5-star read for me and I'm currently deep in In the Game. I post at the intersection of books and fashion — styling outfits after the characters and worlds I love most. I'd love to be considered for future Lakes Hockey titles. Happy to share the account.</div><button class="ws-btn se" style="font-size:0.65rem;margin-top:0.3rem;" onclick="cpById('arc-sloane',this)">Copy template</button>
+    <div class="arc-nt" style="margin-top:0.5rem;">Finish In the Game first. Post about it. Then reach out — you're already inside her world.</div></div>
+
+  <div class="arc" style="border-top-color:var(--oat);"><div class="arc-nm">General Template</div><div class="arc-st">Adapt for each outreach — always specific, never copy-paste</div><div class="arc-tpl">Hi [Name] — I'm Haley from @newe.reads, a bookstagram account where I style outfits after the characters and worlds I read, for women who dress their feelings and read to feel found. [One specific line about why this book, this author, this moment.] I'd love to be considered for an ARC. Happy to share the account.</div><div class="arc-nt">Golden rule: one specific line about why this book, this author, this moment. That line is everything.</div></div>
+</div>
+
+<!-- ══ SHOT LIST ══ -->
+<div class="view" id="view-create-shots">
+  <div class="pg-title">Shot List</div>
+  <div class="pg-sub">What to shoot in the next batch session. One evening = 4–6 weeks of content.</div>
+  <div class="card dk gap"><div class="cv">The batch shoot is a creative ritual, not a task. Put on the Bryce Quinlan playlist. Light the candle. Dress the part. <span>One evening of joy = weeks of content.</span></div></div>
+
+  <div class="sec-lbl gap">Batch session order</div>
+  <div style="display:flex;flex-direction:column;gap:0.5rem;" class="gap">
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">① Nesta armor outfit</div><div class="acc-meta">Fashion x Books · Priority</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;font-size:0.75rem;color:var(--muted);line-height:1.6;">Dark grey, burgundy, structured silhouette. ACOSF face-out. Against a dark wall or doorway. Energy: armor. She came out the other side. The shot should feel like arrival, not survival.</div></div></div>
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">② Outfit + Drink + Book (×3 variations)</div><div class="acc-meta">Lifestyle · Welcome Series</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;font-size:0.75rem;color:var(--muted);line-height:1.6;">Flatlay on cream surface. Current read, a mug, one yellow accent (sunflower, lemon, a scarf). Shoot 3 variations with different books — that's your first three lifestyle posts sorted.</div></div></div>
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">③ Vinyl series — all 5 characters</div><div class="acc-meta">Lifestyle · Vinyl ♪ series</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;font-size:0.75rem;color:var(--muted);line-height:1.6;">Record on the turntable or held. Warm light. Shoot all five vinyl posts in one session — just swap records. One strong setup image can work for all five with different captions.</div></div></div>
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">④ Book stack TBR</div><div class="acc-meta">Reviews + Recs</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;font-size:0.75rem;color:var(--muted);line-height:1.6;">Stack of 4–6 books, spines facing out, on cream background. Warm afternoon light. One yellow object nearby. Shoot both flatlay and held-in-hands. Caption does the heavy lifting — this image works for multiple posts.</div></div></div>
+    <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title">⑤ Daytime Bryce — bright, owning herself</div><div class="acc-meta">Fashion x Books</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;font-size:0.75rem;color:var(--muted);line-height:1.6;">Something she'd wear to Midgard. A little fun, a little sharp. Bright camel or cream. Outside in good afternoon light or near a window. Energy: the one people underestimate. Confidence without trying.</div></div></div>
+  </div>
+
+  <div class="sec-lbl">Shoot day essentials</div>
+  <div class="card"><div class="cv" style="font-size:0.77rem;line-height:2;">· Cream or oat surface for flatlays (linen cloth, textured wall, wooden table)<br>· 3–4 books currently reading or recently read<br>· A mug, a candle, dried flowers or stems (yellow or neutral)<br>· Your Parisian autumn outfits ironed and ready<br>· Good natural light (afternoon window, not overhead)<br>· Your record player set up — shoot the vinyl series in one go</div></div>
+</div>
+
+<!-- ══ CONTENT PILLARS ══ -->
+<div class="view" id="view-world-pillars">
+  <div class="pg-title">Content Pillars</div>
+  <div class="pg-sub">Six ways you show up. Every post lives in one of them.</div>
+  <div class="card dk gap"><div class="cv">The differentiator is not fashion x books as a formula. <span>It's you.</span> A woman who became herself through what she read — and shares that life fully. The outfits, the records, the midnight bakes, the real feelings. Nobody else is doing all of this from inside your specific story.</div></div>
+  <div style="display:flex;flex-direction:column;gap:0.65rem;" class="gap">
+    <div class="pillar" style="border-left-color:var(--espresso);"><div class="p-name">Her Story</div><div class="p-desc">The root. Everything else grows from here. You — past tense, from a place of arrival. The chapter you closed. The romantic you still are. Nesta came out the other side not softened but fully herself. Piper recognized the pattern and stood up straighter. This pillar is why the right woman exhales when she finds you. Post when it's true, not when it's scheduled.</div><div class="p-freq">Monthly — when it feels real</div></div>
+    <div class="pillar" style="border-left-color:var(--chocolate);"><div class="p-name">Fashion x Books</div><div class="p-desc">How you show up. The outfit means something because of who's wearing it and why. You dress the way you feel — Nesta's armor on a hard day, Bryce's self-possession on a Tuesday when you're walking into a room and owning it before you say a word. This is the most visible thing about @newe.reads. It works because you mean it, not because it's a concept. You are the signature. Not the formula.</div><div class="p-freq">Weekly</div></div>
+    <div class="pillar" style="border-left-color:var(--camel);"><div class="p-name">Lifestyle</div><div class="p-desc">How you live inside a story. The record isn't a prop — you put on Folklore because Persephone needed it and so did you. The recipe at midnight happened because a book made you feel something and your hands needed somewhere to put it. The drink, the candle, the ritual — this isn't atmosphere. This is just how you actually read. Persephone didn't choose between the spring and the shadow. She learned to live in both. That's this pillar.</div><div class="p-freq">Weekly</div></div>
+    <div class="pillar" style="border-left-color:var(--burgundy);"><div class="p-name">Reviews + Recs</div><div class="p-desc">The honest take. No spoilers. No obligation. What you'd hand someone who is quietly rebuilding and needs the right book at the right moment. Cara's voice — fierce loyalty to the books that showed up for her, completely unashamed about wanting what she wants from a story. "I needed this book" — never "you should read this."</div><div class="p-freq">Weekly</div></div>
+    <div class="pillar" style="border-left-color:var(--olive);"><div class="p-name">Community</div><div class="p-desc">Where your audience talks back and the found family forms. Polls, Trope Tuesday, BookTok crossover, the questions only your specific reader would want to answer. You start it — they take it somewhere. This is the Brittanee Nicole thesis: the universe gets richer the more people are inside it together.</div><div class="p-freq">1–2x per week</div></div>
+    <div class="pillar" style="border-left-color:var(--sunshine);"><div class="p-name">Short-Form / Reels</div><div class="p-desc">Just saying the thing. The niche book thought you had at 11pm that you almost didn't post. No aesthetic required. No edit. Bryce Quinlan never waited for permission to have an opinion — and neither do you. The format is the restraint: one specific thought, your voice, let people catch up. Starts after your intro week.</div><div class="p-freq">Weekly — from Week 2</div></div>
+  </div>
+  <div class="sec-lbl">Your recurring series</div>
+  <div class="g2">
+    <div class="card"><div class="cv" style="line-height:2.1;font-size:0.77rem;"><strong style="color:var(--espresso);">Fashion x Books</strong><br>Outfit styled to a character<br>Books That Match My Era<br>FMC energy outfit<br><br><strong style="color:var(--espresso);">Lifestyle</strong><br>Outfit + Drink + Book<br>Baking to Audiobooks<br>What record this character would own<br>Spotify character playlists<br><br><strong style="color:var(--espresso);">Her Story</strong><br>Monthly — when it's true</div></div>
+    <div class="card"><div class="cv" style="line-height:2.1;font-size:0.77rem;"><strong style="color:var(--espresso);">Reviews + Recs</strong><br>BookTok Made Me Read It<br>ARC Manifesting carousels<br>5-star shelf breakdowns<br><br><strong style="color:var(--espresso);">Community</strong><br>Trope Tuesday<br>Polls: tropes, spice, ship wars<br>Reading order hot takes<br><br><strong style="color:var(--espresso);">Short-Form / Reels</strong><br>Niche book thought (no edit, just say it)<br>Brittanee Nicole universe / reading order<br>BookTok crossover takes<br>Weekly from Week 2</div></div>
+  </div>
+</div>
+
+<!-- ══ PALETTE ══ -->
+<div class="view" id="view-world-palette">
+  <div class="pg-title">The Palette</div>
+  <div class="pg-sub">Yellow is her soul. Parisian autumn is her aesthetic. Neither cancels the other.</div>
+  <div class="card hi gap" style="text-align:center;"><div class="cv" style="font-family:'Playfair Display',serif;font-style:italic;font-size:0.9rem;color:var(--espresso);">If September was a girl.</div></div>
+  <div class="sec-lbl">The wardrobe — dominant</div>
+  <div class="sw-row">
+    <div class="sw"><div class="sw-c" style="background:#3B2314;"></div><div class="sw-i"><span class="sw-n">Espresso</span><span class="sw-h">#3B2314</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#7B4A2D;"></div><div class="sw-i"><span class="sw-n">Chocolate</span><span class="sw-h">#7B4A2D</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#B07B52;"></div><div class="sw-i"><span class="sw-n">Camel</span><span class="sw-h">#B07B52</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#D4C4B0;"></div><div class="sw-i"><span class="sw-n">Oat</span><span class="sw-h">#D4C4B0</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#F2EDE4;"></div><div class="sw-i"><span class="sw-n">Cream</span><span class="sw-h">#F2EDE4</span></div></div>
+  </div>
+  <div class="sec-lbl">The edge</div>
+  <div class="sw-row">
+    <div class="sw"><div class="sw-c" style="background:#1A1A1A;"></div><div class="sw-i"><span class="sw-n">Noir</span><span class="sw-h">#1A1A1A</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#6B2737;"></div><div class="sw-i"><span class="sw-n">Burgundy</span><span class="sw-h">#6B2737</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#4A5240;"></div><div class="sw-i"><span class="sw-n">Olive</span><span class="sw-h">#4A5240</span></div></div>
+  </div>
+  <div class="sec-lbl">The soul — accent only</div>
+  <div class="sw-row">
+    <div class="sw"><div class="sw-c" style="background:#F5C842;"></div><div class="sw-i"><span class="sw-n">Sunshine</span><span class="sw-h">#F5C842</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#E8A820;"></div><div class="sw-i"><span class="sw-n">Golden</span><span class="sw-h">#E8A820</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#FBF0C4;"></div><div class="sw-i"><span class="sw-n">Butter</span><span class="sw-h">#FBF0C4</span></div></div>
+  </div>
+  <div class="sec-lbl gap" style="margin-top:1.2rem;">Signature pairings</div>
+  <div class="g2 gap">
+    <div class="card"><div style="display:flex;height:32px;border-radius:6px;overflow:hidden;margin-bottom:0.42rem;"><div style="flex:1;background:#F2EDE4;"></div><div style="flex:1;background:#7B4A2D;"></div><div style="flex:1;background:#F5C842;"></div></div><div class="cl">Flatlay base</div><div class="cv" style="font-size:0.72rem;">Cream + chocolate + sunshine.</div></div>
+    <div class="card"><div style="display:flex;height:32px;border-radius:6px;overflow:hidden;margin-bottom:0.42rem;"><div style="flex:1;background:#1A1A1A;"></div><div style="flex:1;background:#B07B52;"></div><div style="flex:1;background:#F2EDE4;"></div></div><div class="cl">Editorial</div><div class="cv" style="font-size:0.72rem;">Noir + camel + cream. Fashion x books.</div></div>
+    <div class="card"><div style="display:flex;height:32px;border-radius:6px;overflow:hidden;margin-bottom:0.42rem;"><div style="flex:1;background:#6B2737;"></div><div style="flex:1;background:#3B2314;"></div><div style="flex:1;background:#E8A820;"></div></div><div class="cl">Moody autumn</div><div class="cv" style="font-size:0.72rem;">Burgundy + espresso + gold.</div></div>
+    <div class="card"><div style="display:flex;height:32px;border-radius:6px;overflow:hidden;margin-bottom:0.42rem;"><div style="flex:1;background:#F2EDE4;"></div><div style="flex:1;background:#D4C4B0;"></div><div style="flex:1;background:#FBF0C4;"></div></div><div class="cl">Soft lifestyle</div><div class="cv" style="font-size:0.72rem;">Cream + oat + butter.</div></div>
+  </div>
+  <div class="card"><div class="cl">Usage rules</div>
+    <div class="row"><div class="ri" style="color:var(--muted);">·</div><div class="rv">Yellow shows up as a detail, not a backdrop. Never the whole frame.</div></div>
+    <div class="row"><div class="ri" style="color:var(--muted);">·</div><div class="rv">When you're in the photo, wear your wardrobe palette. Built for warm spring coloring.</div></div>
+    <div class="row"><div class="ri" style="color:var(--muted);">·</div><div class="rv">Backgrounds almost always cream or oat. Let props and your outfit carry the color.</div></div>
+    <div class="row"><div class="ri" style="color:var(--muted);">·</div><div class="rv">Avoid stark white and cool grays — they wash you out on camera.</div></div>
+  </div>
+</div>
+
+<!-- ══ VINYL ══ -->
+<div class="view" id="view-world-vinyl">
+  <div class="pg-title">Vinyl ♪</div>
+  <div class="pg-sub">"What record this character would own" — a recurring lifestyle series.</div>
+  <div class="card dk gap"><div class="cv">You love records. The crackle before the music starts. The feeling of a needle dropping on something you chose because it felt like a character. <span>The sensory world of living inside a book, even when you're not reading it.</span></div></div>
+  <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.85rem;">Each character has a full record collection — not just one album. Expand to read all options, pick what fits your mood for the post.</div>
+
+  <!-- NESTA -->
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--burgundy);">Nesta Archeron</div><div class="acc-meta">Uncompromising. Experimental. Sharp. No apologies.</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+    <div style="font-size:0.7rem;font-weight:600;color:var(--espresso);margin-bottom:0.5rem;">Her whole collection — pick one for your post:</div>
+    <div style="font-size:0.74rem;color:var(--muted);line-height:1.9;">
+      <strong style="color:var(--espresso);">Post — Bjork (1995)</strong> · Entirely herself in a world that did not know what to do with her. "Army of Me" is the House of Wind stairmaster. The signature Nesta record.<br>
+      <strong style="color:var(--espresso);">Lust for Life — Lana Del Rey (2017)</strong> · The darkness she lived in before she came through it. "13 Beaches" is Nesta finding somewhere no one can find her.<br>
+      <strong style="color:var(--espresso);">Blue — Joni Mitchell (1971)</strong> · Every feeling turned into something beautiful. She would never admit she played this on repeat.<br>
+      <strong style="color:var(--espresso);">Good As Hell — Lizzo (2022)</strong> · The record she put on the first morning she woke up and chose herself. Post-ACOSF Nesta only.<br>
+      <strong style="color:var(--espresso);">The Fame Monster — Lady Gaga (2009)</strong> · Theatrical. Unapologetic. Armor as art. "Bad Romance" is every complicated feeling she never said out loud.<br>
+      <strong style="color:var(--espresso);">Punisher — Phoebe Bridgers (2020)</strong> · The grief underneath. "Funeral" is the chapter where she fell apart before she came back together.<br>
+      <strong style="color:var(--espresso);">1989 — Taylor Swift (2014)</strong> · The reinvention era. She cut herself off from everything that was hurting her and rebuilt from scratch.
+    </div>
+    <div style="font-size:0.7rem;font-style:italic;color:var(--camel);margin-top:0.5rem;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">Signature pick for posts: Post by Bjork. Mood alternative: Lana for dark chapters, Lizzo for arrival energy.</div>
+  </div></div></div>
+
+  <!-- CARA -->
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--camel);">Cara Brodie</div><div class="acc-meta">Longing underneath the bubbly. Wants what she pretends she does not want.</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+    <div style="font-size:0.7rem;font-weight:600;color:var(--espresso);margin-bottom:0.5rem;">Her whole collection:</div>
+    <div style="font-size:0.74rem;color:var(--muted);line-height:1.9;">
+      <strong style="color:var(--espresso);">Punisher — Phoebe Bridgers (2020)</strong> · The longing under the bubbly exterior. "Garden Song" is her growing something in the aftermath. The signature Cara record.<br>
+      <strong style="color:var(--espresso);">Evermore — Taylor Swift (2020)</strong> · The quieter version of herself she only lets out with people she trusts completely. "Champagne Problems" is the thing she almost said.<br>
+      <strong style="color:var(--espresso);">Charm — Clairo (2024)</strong> · Soft and understated with more going on underneath than you first hear. Her Sunday morning record.<br>
+      <strong style="color:var(--espresso);">Rumours — Fleetwood Mac (1977)</strong> · Everyone making something beautiful out of complicated feelings. "The Chain" is Cara in the middle of all her people.<br>
+      <strong style="color:var(--espresso);">Carrie and Lowell — Sufjan Stevens (2015)</strong> · The grief she carries quietly. Not for every mood — for the moments she lets herself feel it.<br>
+      <strong style="color:var(--espresso);">Harry Styles — Harry Styles (2017)</strong> · Warm, hopeful, a little vulnerable. "From the Dining Table" is her 2am song.
+    </div>
+    <div style="font-size:0.7rem;font-style:italic;color:var(--camel);margin-top:0.5rem;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">Signature pick for posts: Punisher. Mood alternative: Evermore for the quiet version of her.</div>
+  </div></div></div>
+
+  <!-- PIPER -->
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--olive);">Piper Mitchell</div><div class="acc-meta">Recognized the pattern. Chose differently. Sunshine with receipts.</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+    <div style="font-size:0.7rem;font-weight:600;color:var(--espresso);margin-bottom:0.5rem;">Her whole collection:</div>
+    <div style="font-size:0.74rem;color:var(--muted);line-height:1.9;">
+      <strong style="color:var(--espresso);">Midnights — Taylor Swift (2022)</strong> · The record of women who recognized the pattern and chose differently. "Lavender Haze" is stepping into something she does not have to perform. The signature Piper record.<br>
+      <strong style="color:var(--espresso);">Golden Hour — Kacey Musgraves (2018)</strong> · The emotional landscape of being ready for something new. "Happy and Sad" is Piper at the exact moment the book starts.<br>
+      <strong style="color:var(--espresso);">Ctrl — SZA (2017)</strong> · The clarity that comes after the hurt. "Normal Girl" is Piper before she stopped settling. "Garden" is after.<br>
+      <strong style="color:var(--espresso);">Sunrise Boulevard — Gracie Abrams (2023)</strong> · Young, a little lost, figuring it out in real time. The record of the in-between.<br>
+      <strong style="color:var(--espresso);">Hits Different — Taylor Swift EP (2023)</strong> · Specifically the process of unwinding from something that was not right. One song, big feeling.<br>
+      <strong style="color:var(--espresso);">Radical Optimism — Dua Lipa (2024)</strong> · The version of Piper who decided to be okay. Dance-y. Deliberate. Done with half-love.
+    </div>
+    <div style="font-size:0.7rem;font-style:italic;color:var(--camel);margin-top:0.5rem;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">Signature pick for posts: Midnights. Mood alternative: Golden Hour for the tender beginning, Radical Optimism for the arrived version.</div>
+  </div></div></div>
+
+  <!-- BRYCE -->
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--chocolate);">Bryce Quinlan (daytime)</div><div class="acc-meta">Owns the room. Knows it. Not sorry.</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+    <div style="font-size:0.7rem;font-weight:600;color:var(--espresso);margin-bottom:0.5rem;">Her whole collection:</div>
+    <div style="font-size:0.74rem;color:var(--muted);line-height:1.9;">
+      <strong style="color:var(--espresso);">Short n Sweet — Sabrina Carpenter (2024)</strong> · She owns the room and is not sorry. "Espresso" is Bryce walking into Lunathion on a Tuesday. The signature Bryce record.<br>
+      <strong style="color:var(--espresso);">Pink Friday 2 — Nicki Minaj (2023)</strong> · Confident, loud, built her whole world from scratch and dares anyone to say something about it.<br>
+      <strong style="color:var(--espresso);">Beyonce — Beyonce (2013)</strong> · Surprise drop. Did not explain herself. Bryce Quinlan energy from start to finish.<br>
+      <strong style="color:var(--espresso);">Chromatica — Lady Gaga (2020)</strong> · Found family, surviving, dancing through it. "Rain on Me" is Bryce and Danika.<br>
+      <strong style="color:var(--espresso);">glory — Britney Spears (2016)</strong> · Underestimated her whole career. Made this album anyway. Daytime Bryce in record form.<br>
+      <strong style="color:var(--espresso);">Eternal Sunshine — Ariana Grande (2024)</strong> · Moving forward with style and without apology. Every bop, zero explanation owed.
+    </div>
+    <div style="font-size:0.7rem;font-style:italic;color:var(--camel);margin-top:0.5rem;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">Signature pick for posts: Short n Sweet. Mood alternative: Beyonce for the "do not underestimate her" posts, Chromatica for found family content.</div>
+  </div></div></div>
+
+  <!-- PERSEPHONE -->
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--golden);">Persephone</div><div class="acc-meta">Spring and shadow. Both worlds. Became the queen she did not know she was.</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+    <div style="font-size:0.7rem;font-weight:600;color:var(--espresso);margin-bottom:0.5rem;">Her whole collection:</div>
+    <div style="font-size:0.74rem;color:var(--muted);line-height:1.9;">
+      <strong style="color:var(--espresso);">Folklore — Taylor Swift (2020)</strong> · The space between spring and the underworld. "Seven" is who she was before Hades. "Peace" is after she stopped choosing. The signature Persephone record. 💛🌙<br>
+      <strong style="color:var(--espresso);">i,i — Bon Iver (2019)</strong> · Something that sounds like two worlds existing at once. Not easy to listen to. Worth every second.<br>
+      <strong style="color:var(--espresso);">Uneasy Laughter — Squirrel Flower (2020)</strong> · A woman finding her footing in a world she did not choose to enter. Quiet power.<br>
+      <strong style="color:var(--espresso);">Venus Fly — Grimes and Janelle Monae</strong> · Mythology, femininity, something slightly otherworldly. The goddess trying to be a journalist.<br>
+      <strong style="color:var(--espresso);">Fetch the Bolt Cutters — Fiona Apple (2020)</strong> · Claiming her power. Letting herself be strange. "Cosmonauts" is Persephone in the underworld realizing she belongs there.<br>
+      <strong style="color:var(--espresso);">A Seat at the Table — Solange (2016)</strong> · Quiet insistence on taking up space. Growing into a crown she did not know she was wearing.<br>
+      <strong style="color:var(--espresso);">Sometimes I Sit and Think — Courtney Barnett (2015)</strong> · The observer. The one watching everything and thinking more than she says.
+    </div>
+    <div style="font-size:0.7rem;font-style:italic;color:var(--camel);margin-top:0.5rem;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">Signature pick for posts: Folklore. Mood alternative: Fetch the Bolt Cutters for the power arc, A Seat at the Table for the queen she became.</div>
+  </div></div></div>
+  <div class="sec-lbl" style="margin-top:0.75rem;">Caption template</div>
+  <div class="card"><div class="cv" style="font-size:0.78rem;line-height:1.82;font-style:italic;color:var(--espresso);">"If [Character] had a record player, it would always be [Album] on the turntable.<br><br>[One specific reason — the lyric, the feeling, the exact moment in the book it matches].<br><br>I put this on while I was reading [book] and I haven't been able to listen to it any other way since.<br><br>What record sounds like the book you're reading right now?"</div></div>
+  <div class="fn">The crackle before the music. That's the whole thing. 💛🌙</div>
+</div>
+
+
+<!-- BAKING MAP -->
+<div class="view" id="view-world-baking">
+  <div class="pg-title">Baking Map 🍞</div>
+  <div class="pg-sub">Every character maps to a food. Every food maps to a caption. This is the series.</div>
+  <div class="card dk gap"><div class="cv">She made this at midnight because a book made her feel something. <span>That is the whole post.</span></div></div>
+
+  <div class="sec-lbl gap">The five FMCs — what they taste like</div>
+
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--burgundy);">Nesta Archeron</div><div class="acc-meta">Dark chocolate. Bitter edges. Unexpectedly complex.</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+    <div style="font-size:0.72rem;font-weight:600;color:var(--chocolate);margin-bottom:0.5rem;">She is dark chocolate. Bitter at first, full of depth, something you have to earn. Not sweet for its own sake.</div>
+    <div style="font-size:0.75rem;color:var(--muted);line-height:1.65;margin-bottom:0.6rem;">Nesta does not do soft. Her bakes are precise, intense, slightly intimidating. The kind of thing you pull out of the oven and cannot believe you made.</div>
+    <div style="font-size:0.7rem;font-weight:600;color:var(--espresso);margin-bottom:0.25rem;">Content-ready bakes:</div>
+    <div style="font-size:0.74rem;color:var(--muted);line-height:1.75;">
+      Dark chocolate tahini brownies — bitter, rich, not apologizing for it<br>
+      Espresso shortbread — four ingredients, all of them serious<br>
+      Black sesame layer cake — looks intimidating, taste earns it<br>
+      Salted dark chocolate tart — the dessert equivalent of House of Wind stairmaster energy<br>
+      Burnt honey cake — she does not do things by halves
+    </div>
+    <div style="font-size:0.7rem;font-style:italic;color:var(--camel);margin-top:0.5rem;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">Caption direction: "I made this at midnight after finishing ACOSF. Nesta would not apologize for how good this is and neither will I."</div>
+  </div></div></div>
+
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--camel);">Cara Brodie</div><div class="acc-meta">Brown butter. Warm, nostalgic, more interesting than it looks.</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+    <div style="font-size:0.72rem;font-weight:600;color:var(--chocolate);margin-bottom:0.5rem;">She is brown butter. Familiar but elevated. Comforting with depth. The thing everyone loves but cannot always name.</div>
+    <div style="font-size:0.75rem;color:var(--muted);line-height:1.65;margin-bottom:0.6rem;">Cara bakes for other people. There is always enough for everyone. Her flavors are warm and nostalgic with something just slightly unexpected underneath.</div>
+    <div style="font-size:0.7rem;font-weight:600;color:var(--espresso);margin-bottom:0.25rem;">Content-ready bakes:</div>
+    <div style="font-size:0.74rem;color:var(--muted);line-height:1.75;">
+      Brown butter chocolate chip cookies — the classic with a secret<br>
+      Peach cobbler with cardamom — summertime, warmth, grandmother energy<br>
+      Oat and honey loaf — practical, nourishing, genuinely good<br>
+      Cinnamon roll casserole — the kind of thing you make when someone needs taking care of<br>
+      Caramel apple galette — imperfect edges, perfect inside
+    </div>
+    <div style="font-size:0.7rem;font-style:italic;color:var(--camel);margin-top:0.5rem;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">Caption direction: "Breathe With Me had me in the kitchen at 10pm. Cara Brodie bakes for the people she loves and so do I."</div>
+  </div></div></div>
+
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--olive);">Piper Mitchell</div><div class="acc-meta">Lemon. Bright, clean, more tart than expected.</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+    <div style="font-size:0.72rem;font-weight:600;color:var(--chocolate);margin-bottom:0.5rem;">She is lemon. Sunshine that has a spine. Bright, clean, and more tart than you were expecting.</div>
+    <div style="font-size:0.75rem;color:var(--muted);line-height:1.65;margin-bottom:0.6rem;">Piper bakes on Sunday mornings. Her kitchen is organized. Her playlists are perfect. She makes things that look simple and taste like care.</div>
+    <div style="font-size:0.7rem;font-weight:600;color:var(--espresso);margin-bottom:0.25rem;">Content-ready bakes:</div>
+    <div style="font-size:0.74rem;color:var(--muted);line-height:1.75;">
+      Lemon ricotta pancakes — Sunday morning, quiet apartment, Midnights playing<br>
+      Lemon olive oil cake — elegant but effortless, like her<br>
+      Lavender shortbread — "Lavender Haze" is literally the song for this<br>
+      Citrus tart — sharp, bright, does not over-explain itself<br>
+      Earl grey madeleines — the thing you make when you are choosing differently
+    </div>
+    <div style="font-size:0.7rem;font-style:italic;color:var(--camel);margin-top:0.5rem;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">Caption direction: "Piper Mitchell is sunshine incarnate and so is this lemon olive oil cake. I put on Midnights and made this in one hour."</div>
+  </div></div></div>
+
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--chocolate);">Bryce Quinlan</div><div class="acc-meta">Espresso. Fast, sharp, needs no explanation.</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+    <div style="font-size:0.72rem;font-weight:600;color:var(--chocolate);margin-bottom:0.5rem;">She is espresso. Quick, sharp, unapologetically strong. The flavor that wakes you up and refuses to be subtle.</div>
+    <div style="font-size:0.75rem;color:var(--muted);line-height:1.65;margin-bottom:0.6rem;">Bryce does not have time for a complicated bake. She has time for something that looks incredible and takes 30 minutes. She brings it to Danika and it disappears instantly.</div>
+    <div style="font-size:0.7rem;font-weight:600;color:var(--espresso);margin-bottom:0.25rem;">Content-ready bakes:</div>
+    <div style="font-size:0.74rem;color:var(--muted);line-height:1.75;">
+      Espresso martini tiramisu — sexy, fast, does not require a special occasion<br>
+      One-bowl fudgy brownies — 30 minutes, zero regrets<br>
+      Affogato with homemade vanilla — technically not baking, fully Bryce<br>
+      Coffee cardamom cookies — the ones you bring to your found family and they ask for the recipe<br>
+      Dark chocolate bark with sea salt — takes 15 minutes and looks like you planned it
+    </div>
+    <div style="font-size:0.7rem;font-style:italic;color:var(--camel);margin-top:0.5rem;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">Caption direction: "Daytime Bryce Quinlan would make tiramisu at midnight and not tell anyone how easy it was. Putting Short n Sweet on and doing the same."</div>
+  </div></div></div>
+
+  <div class="acc"><div class="acc-hd" onclick="togAcc(this)"><div><div class="acc-title" style="color:var(--golden);">Persephone</div><div class="acc-meta">Honey and pomegranate. Spring and the underworld in one bite.</div></div><div class="acc-arr">▼</div></div><div class="acc-body"><div style="padding-top:0.75rem;">
+    <div style="font-size:0.72rem;font-weight:600;color:var(--chocolate);margin-bottom:0.5rem;">She is honey and pomegranate. The sweetness of spring and the dark tartness of the underworld, inseparable.</div>
+    <div style="font-size:0.75rem;color:var(--muted);line-height:1.65;margin-bottom:0.6rem;">Persephone bakes with the seasons. She started with flowers that died in her hands — she ended making things that people could not stop eating. The arc is in the recipe.</div>
+    <div style="font-size:0.7rem;font-weight:600;color:var(--espresso);margin-bottom:0.25rem;">Content-ready bakes:</div>
+    <div style="font-size:0.74rem;color:var(--muted);line-height:1.75;">
+      Pomegranate and honey cake — literally her whole mythology in one recipe<br>
+      Wildflower honey tart with roasted figs — spring and shadow<br>
+      Rose and pistachio baklava — ornate, layered, worth the effort<br>
+      Blackberry galette with honey cream — dark fruit, golden sweetness<br>
+      Hibiscus olive oil cake — pink as spring, deep as the underworld
+    </div>
+    <div style="font-size:0.7rem;font-style:italic;color:var(--camel);margin-top:0.5rem;border-top:1px solid rgba(176,123,82,0.15);padding-top:0.4rem;">Caption direction: "Persephone is spring and shadow. This pomegranate honey cake is too. I made it listening to Folklore and I have not recovered. 💛🌙"</div>
+  </div></div></div>
+
+  <div class="sec-lbl" style="margin-top:0.75rem;">Series format — how to post it</div>
+  <div class="card"><div class="cv" style="font-size:0.77rem;line-height:1.95;">
+    <strong>The post:</strong> Photo of the finished bake. Warm light, cream surface, one character-coded prop (a book, a record, a candle in their palette color).<br>
+    <strong>The caption:</strong> What you made. What character. What you were listening to. What the book made you feel. End with a recipe question or a "which character are you baking as today?"<br>
+    <strong>Stories:</strong> The process — the mixing bowl, the oven timer, the first slice. Stories are where the baking series lives fully. Feed is just the hero shot.<br>
+    <strong>The series name:</strong> "Baking to [Book Title]" or "Midnight Bakes with [Character]" — keep it consistent so it becomes findable.
+  </div></div>
+</div>
+
+<!-- ══ LIFESTYLE MAP ══ -->
+<div class="view" id="view-world-life">
+  <div class="pg-title">Lifestyle Map</div>
+  <div class="pg-sub">The sensory universe of @newe.reads — the world around the books.</div>
+  <div class="card dk gap"><div class="cv">Most bookstagram shows you the book. @newe.reads shows you the <span>whole life of being a reader</span> — the record that sounds like a character, the recipe made at midnight because a chapter made you feel something, the outfit that is just Bryce Quinlan on a Tuesday.</div></div>
+  <div class="sec-lbl gap">Series concepts</div>
+  <div style="display:flex;flex-direction:column;gap:0.62rem;" class="gap">
+    <div class="card al" style="border-left-color:var(--espresso);"><div class="cl">Outfit + Drink + Book of the Day</div><div class="cv" style="font-size:0.77rem;">The holy trinity. A styled photo, what you're drinking, what you're reading. The most repeatable format — shoot 3 variations per batch session.</div></div>
+    <div class="card al" style="border-left-color:var(--chocolate);"><div class="cl">Baking to Audiobooks</div><div class="cv" style="font-size:0.77rem;">"Ruhn Danaan had me making this at midnight." Specific recipe + specific book + the exact feeling. Shoot the result, not the process.</div></div>
+    <div class="card al" style="border-left-color:var(--camel);"><div class="cl">What Record This Character Would Own</div><div class="cv" style="font-size:0.77rem;">The vinyl series. All five characters mapped. See Her World → Vinyl for the full series and caption template.</div></div>
+    <div class="card al" style="border-left-color:var(--olive);"><div class="cl">Spotify Character Playlists</div><div class="cv" style="font-size:0.77rem;">A playlist that sounds like being a character. Shared as a Story link. "This is what it sounds like to be Nesta on her best day." Let people save it.</div></div>
+    <div class="card al" style="border-left-color:var(--sunshine);"><div class="cl">The Reading Ritual</div><div class="cv" style="font-size:0.77rem;">How you actually read. Not aspirational — true. "I read ACOSF on the bathroom floor and cried." That kind of specific.</div></div>
+  </div>
+  <div class="sec-lbl">Season by season</div>
+  <div class="card"><div class="cv" style="font-size:0.77rem;line-height:2.05;"><strong>Summer (launch):</strong> Bright and warm, outdoor shoots, lighter reads, Chelsea Curto drop.<br><strong>Autumn (power season):</strong> Peak palette, candle-lit flatlays, ACOTAR season, Persephone deep dive.<br><strong>Winter:</strong> Cozy reader energy, book-by-the-fire setups, gifting guides, year-end carousel.<br><strong>All year:</strong> Vinyl series, baking to audiobooks, Outfit + Drink + Book, Trope Tuesday.</div></div>
+  <div class="fn">The crackle before the music. That's the whole thing. 💛🌙</div>
+</div>
+
+</main>
+</div>
+</div>
+
+<script>
+// ─── LOGIN ───
+function tryLogin(){
+  const u=document.getElementById('lu').value.trim().toLowerCase();
+  const p=document.getElementById('lp').value.trim().toLowerCase();
+  if(u==='hales'&&p==='nesta'){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';renderDrafts();updProg();}
+  else{document.getElementById('lerr').textContent='hmm, try again 💛';document.getElementById('lp').value='';document.getElementById('lp').focus();}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
+
+// ─── NAV ───
+let sec='her';
+let sv={her:'her-why',plan:'plan-now',create:'create-cap',world:'world-pillars'};
+function setSection(s,el){
+  sec=s;
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');
+  document.querySelectorAll('.sidebar-section').forEach(x=>x.classList.remove('active'));document.getElementById('sb-'+s).classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-'+sv[s]).classList.add('active');
+  document.querySelectorAll('#sb-'+s+' .sb-item').forEach(i=>{i.classList.remove('active');if(i.getAttribute('onclick')&&i.getAttribute('onclick').includes("'"+sv[s]+"'"))i.classList.add('active');});
+}
+function setView(vid,el,s){
+  sv[s]=vid;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-'+vid).classList.add('active');
+  document.querySelectorAll('#sb-'+s+' .sb-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');
+}
+
+// ─── ACCORDIONS ───
+function togAcc(hd){
+  hd.classList.toggle('open');
+  const body=hd.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// ─── FMC QUICK REFERENCE ───
+const quickData={
+  nesta:{color:"var(--burgundy)",label:"Nesta Archeron",phrase:"Surviving in plain sight. Fully, finally herself.",voice:"Sharp. Guarded. Steel underneath. No apologies. Post from her place of arrival, not injury.",content:"ACOSF armor outfit. If you have been through hell, you get her."},
+  cara:{color:"var(--camel)",label:"Cara Brodie",phrase:"Fierce for the people she loves. Anxious underneath.",voice:"Bubbly, warm, genuine. The one making everyone laugh while wondering if she is running out of time.",content:"Breathe With Me review. Vinyl: Punisher by Phoebe Bridgers. Friendship content."},
+  piper:{color:"var(--olive)",label:"Piper Mitchell",phrase:"Recognized the pattern. Chose differently. Spine a little straighter.",voice:"Wise older sister. Sunshine incarnate. Not dramatic, just done making herself smaller.",content:"Power Play review. Midnights vinyl. She recognized the pattern and chose differently."},
+  bryce:{color:"var(--chocolate)",label:"Bryce Quinlan",phrase:"Daytime Bryce. The content voice. The one people underestimate.",voice:"Spunky, soft with the people she loves. Quick. Sharp. Owns the room. The account daily voice.",content:"Crescent City content. Short n Sweet vinyl. Found family captions. Hope content."},
+  persephone:{color:"var(--golden)",label:"Persephone",phrase:"Holds both worlds without choosing. Spring and shadow.",voice:"She learned loving something shadowed does not make you less of the light. The most her thing of all.",content:"Hades x Persephone deep dive. Folklore vinyl. A little spring, a little shadow."}
+};
+function showQuick(key){
+  const d=quickData[key];
+  const panel=document.getElementById('quick-panel');
+  document.getElementById('quick-content').innerHTML=`<div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:${d.color};margin-bottom:0.3rem;">${d.label}</div><div style="font-style:italic;font-family:'Playfair Display',serif;font-size:0.85rem;color:var(--espresso);margin-bottom:0.5rem;">"${d.phrase}"</div><div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.3rem;"><strong style="color:var(--chocolate);">Voice:</strong> ${d.voice}</div><div style="font-size:0.72rem;color:var(--muted);"><strong style="color:var(--chocolate);">Content:</strong> ${d.content}</div>`;
+  panel.style.display='block';
+  panel.classList.add('celebrate');
+  setTimeout(()=>panel.classList.remove('celebrate'),400);
+}
+
+// ─── MILESTONES ───
+function togMS(row){
+  row.classList.toggle('hit');
+  if(row.classList.contains('hit')){
+    row.querySelector('.ms-chk').textContent='★';
+    const txt=row.querySelector('.ms-txt').textContent;
+    if(txt.includes('ARC email')){confetti();}
+  } else {
+    row.querySelector('.ms-chk').textContent='';
+  }
+}
+function confetti(){
+  const msg=document.createElement('div');
+  msg.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--espresso);color:var(--sunshine);font-family:"Playfair Display",serif;font-style:italic;font-size:1.1rem;padding:1.5rem 2rem;border-radius:12px;z-index:9999;text-align:center;box-shadow:0 20px 60px rgba(59,35,20,0.4);max-width:320px;';
+  msg.textContent='SHE DID IT. The ARC email. 💛🌙';
+  document.body.appendChild(msg);
+  setTimeout(()=>msg.remove(),3000);
+}
+
+// ─── BUILD CHECKLIST ───
+function tog(item){item.classList.toggle('checked');updProg();}
+function updProg(){
+  const all=document.querySelectorAll('.bi'),done=document.querySelectorAll('.bi.checked');
+  const pct=Math.round((done.length/all.length)*100);
+  const pf=document.getElementById('pf');
+  if(pf){pf.style.width=pct+'%';document.getElementById('pl').textContent=done.length+' of '+all.length+' complete';}
+}
+
+// ─── CAPTION WORKSPACE ───
+let curPillar='Fashion x Books';
+function selPill(el,p){
+  document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));el.classList.add('active');
+  curPillar=p||el.textContent.trim();
+  const badge=document.getElementById('ws-pillar-badge');
+  if(badge)badge.textContent=curPillar;
+}
+function updCC(){
+  const ta=document.getElementById('cdraft');
+  const cc=document.getElementById('cc-count');
+  if(!ta||!cc)return;
+  const len=ta.value.length;
+  cc.textContent=len+' characters';
+  cc.className='char-count';
+  if(len>2200)cc.classList.add('over');
+  else if(len>1800)cc.classList.add('warn');
+}
+function saveDraft(){
+  const text=document.getElementById('cdraft').value.trim();
+  if(!text){alert('Write something first 💛');return;}
+  const drafts=getDrafts();
+  drafts.unshift({id:Date.now(),pillar:curPillar,text,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}),status:'draft'});
+  localStorage.setItem('newe_drafts',JSON.stringify(drafts));
+  document.getElementById('cdraft').value='';
+  updCC();
+  alert('Draft saved! ✓ Find it in Saved Drafts.');
+}
+function clearDraft(){if(confirm('Clear this draft?')){document.getElementById('cdraft').value='';updCC();}}
+function getDrafts(){try{return JSON.parse(localStorage.getItem('newe_drafts')||'[]');}catch{return[];}}
+let draftFilter='all';
+function filterDrafts(f,el){
+  draftFilter=f;
+  document.querySelectorAll('#draft-filters .pill').forEach(p=>p.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderDrafts();
+}
+function renderDrafts(){
+  const list=document.getElementById('draft-list');
+  const empty=document.getElementById('draft-empty');
+  if(!list)return;
+  const drafts=getDrafts().filter(d=>draftFilter==='all'||d.pillar===draftFilter);
+  if(!drafts.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=drafts.map(d=>`<div class="draft-item" id="di-${d.id}">
+    <div class="draft-top">
+      <div style="display:flex;gap:0.35rem;align-items:center;flex-wrap:wrap;">
+        <span class="draft-pill">${d.pillar}</span>
+        <span class="draft-status-tag ${d.status==='ready'?'st-ready':'st-draft'}">${d.status==='ready'?'Ready ✓':'Draft'}</span>
+      </div>
+      <div class="draft-acts">
+        <div class="draft-act" onclick="cpDraft(${d.id})">Copy</div>
+        <div class="draft-act" onclick="togStatus(${d.id})">${d.status==='ready'?'← Draft':'Mark ready'}</div>
+        <div class="draft-act del" onclick="delDraft(${d.id})">Delete</div>
+      </div>
+    </div>
+    <div class="draft-text">${d.text.substring(0,200)}${d.text.length>200?'…':''}</div>
+    <div class="draft-date">Saved ${d.date}</div>
+  </div>`).join('');
+}
+function cpDraft(id){
+  const d=getDrafts().find(x=>x.id===id);
+  if(!d)return;
+  navigator.clipboard.writeText(d.text).then(()=>alert('Copied to clipboard ✓')).catch(()=>alert('Select the text manually to copy.'));
+}
+function togStatus(id){
+  const drafts=getDrafts();
+  const i=drafts.findIndex(x=>x.id===id);
+  if(i<0)return;
+  drafts[i].status=drafts[i].status==='ready'?'draft':'ready';
+  localStorage.setItem('newe_drafts',JSON.stringify(drafts));
+  renderDrafts();
+}
+function delDraft(id){
+  if(!confirm('Delete this draft?'))return;
+  const drafts=getDrafts().filter(x=>x.id!==id);
+  localStorage.setItem('newe_drafts',JSON.stringify(drafts));
+  renderDrafts();
+}
+
+// ─── WEEK PLANNER ───
+const weekPosts={};
+const pillarKeys={Fashion_x_Books:'Fashion x Books',Reviews__Recs:'Reviews + Recs',Lifestyle:'Lifestyle',Community:'Community',Her_Story:'Her Story',Vinyl:'Vinyl'};
+let modalDay='';
+function openModal(day){
+  modalDay=day;
+  document.getElementById('modalDay').textContent=day;
+  document.getElementById('modalPost').value='';
+  document.getElementById('modalPillar').value='';
+  document.getElementById('postModal').classList.remove('hidden');
+}
+function closeModal(){document.getElementById('postModal').classList.add('hidden');}
+function savePost(){
+  const pillar=document.getElementById('modalPillar').value;
+  const post=document.getElementById('modalPost').value.trim();
+  if(!pillar||!post)return;
+  if(!weekPosts[modalDay])weekPosts[modalDay]=[];
+  weekPosts[modalDay].push({pillar,post});
+  closeModal();
+  renderWeek();
+  updGapTracker();
+}
+const pillarColors={'Fashion x Books':getComputedStyle(document.documentElement).getPropertyValue('--espresso')||'#3B2314','Reviews + Recs':'#7B4A2D','Lifestyle':'#B07B52','Community':'#4A5240','Her Story':'#6B2737','Vinyl':'#E8A820'};
+const pillarBg={'Fashion x Books':'rgba(59,35,20,0.08)','Reviews + Recs':'rgba(123,74,45,0.1)','Lifestyle':'rgba(176,123,82,0.1)','Community':'rgba(74,82,64,0.1)','Her Story':'rgba(107,39,55,0.08)','Vinyl':'rgba(232,168,32,0.12)'};
+function renderWeek(){
+  const days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const ids=['mon','tue','wed','thu','fri','sat','sun'];
+  days.forEach((d,i)=>{
+    const cell=document.getElementById('day-'+ids[i]);
+    if(!cell)return;
+    const posts=weekPosts[d]||[];
+    const inner=posts.map(p=>`<div class="day-post" style="background:${pillarBg[p.pillar]||'rgba(176,123,82,0.08)'};color:${pillarColors[p.pillar]||'#3B2314'};">${p.post.substring(0,28)}</div>`).join('');
+    cell.innerHTML=`<div class="day-label">${d.substring(0,3)}</div>${inner}<div class="day-add" onclick="openModal('${d}')">+ add</div>`;
+    cell.classList.toggle('has-post',posts.length>0);
+  });
+}
+function updGapTracker(){
+  const counts={fashion:0,reviews:0,lifestyle:0,community:0,story:0};
+  Object.values(weekPosts).flat().forEach(p=>{
+    if(p.pillar==='Fashion x Books')counts.fashion++;
+    else if(p.pillar==='Reviews + Recs')counts.reviews++;
+    else if(p.pillar==='Lifestyle')counts.lifestyle++;
+    else if(p.pillar==='Community')counts.community++;
+    else if(p.pillar==='Her Story')counts.story++;
+  });
+  const max=2;
+  Object.entries(counts).forEach(([k,v])=>{
+    const pct=Math.min(v/max,1);
+    const circ=Math.round(pct*107);
+    const c=document.getElementById('gc-'+k);
+    const n=document.getElementById('gn-'+k);
+    if(c){c.setAttribute('stroke-dasharray',circ+' '+(107-circ));}
+    if(n)n.textContent=v;
+  });
+  const missing=[];
+  if(counts.fashion===0)missing.push('Fashion x Books (your anchor — never skip)');
+  if(counts.reviews===0)missing.push('Reviews + Recs');
+  if(counts.lifestyle===0)missing.push('Lifestyle');
+  const adv=document.getElementById('gap-advice');
+  if(adv){
+    if(missing.length){adv.style.display='block';adv.textContent='Missing this week: '+missing.join(' · ');}
+    else{adv.style.display='block';adv.textContent='✦ All core pillars covered this week. That is the account working.';}
+  }
+}
+
+// ─── BIO BUILDER ───
+function updBio(val){
+  document.getElementById('bio-live').textContent=val;
+  const c=document.getElementById('bio-char-count');
+  const clean=val.replace(/\n/g,' ');
+  c.textContent=clean.length+' / 150 chars';
+  c.style.color=clean.length>150?'var(--burgundy)':clean.length>130?'var(--golden)':'rgba(212,196,176,0.5)';
+}
+function setBio(text){
+  document.getElementById('bio-edit').value=text;
+  updBio(text);
+}
+function cpBio(){
+  const val=document.getElementById('bio-edit').value;
+  navigator.clipboard.writeText(val).then(()=>alert('Bio copied ✓')).catch(()=>alert('Select and copy manually.'));
+}
+
+// ─── WHEN I'M STUCK ───
+let promptPillar='Fashion x Books';
+function setPromptPillar(p,el){
+  promptPillar=p;
+  document.querySelectorAll('#view-create-stuck .pill').forEach(x=>x.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+const prompts={
+  "Fashion x Books":[
+    "What outfit would [FMC name] wear to feel like herself on a hard day? Describe it like you are dressing her.",
+    "The book is on the table. The outfit is on the chair. What is the story between them? Start with the specific detail.",
+    "You put this look together because of a scene. Which scene? Write it like you are explaining to a friend.",
+    "If this character had one wardrobe rule, what would it be? Now build the caption around that rule.",
+    "Pick a color in your outfit today and trace it back to a book world. That is your caption."
+  ],
+  "Reviews + Recs":[
+    "Start with the exact moment you knew. Not I loved it. The specific line, the specific chapter, the specific 2am.",
+    "Who needs this book today? Not your whole audience. One specific woman. Write to her.",
+    "What did this book make you do? Put it down. Call someone. Make something at midnight. Start there.",
+    "Write the two-sentence version you would text your best friend right now. Then expand it once.",
+    "What does this book sound like? What does it smell like? What does it feel like in your hands at night? Lead with that."
+  ],
+  "Lifestyle":[
+    "What are you drinking right now? What are you reading? Those two things together are a post. Start describing the feeling.",
+    "What is playing while you read tonight? Trace the song back to the character. That is your caption.",
+    "Describe the last time you could not stop reading. Be specific about where you were, what time it was, what you sacrificed.",
+    "What recipe would the book you are reading inspire? Do not explain it. Just start with I made this because.",
+    "The candle, the blanket, the specific kind of light. Set the scene. Make us want to be there."
+  ],
+  "Community":[
+    "Enemies to lovers OR grumpy sunshine. No fence-sitting. Why? Write the case.",
+    "The fictional character you would want to have dinner with. Be specific about what you would talk about.",
+    "Finish this: If you have ever read a book and felt like the author wrote it specifically for you, you need to read...",
+    "The most underrated trope that does not get enough credit. State your case.",
+    "What book did BookTok get completely wrong? What did you actually think of it?"
+  ],
+  "Her Story":[
+    "There was a version of you who needed a specific book at a specific time. Write to her. Past tense only.",
+    "What book changed how you see yourself? Not it was transformative. The specific thing that shifted.",
+    "Finish this: I used to think I was [type of person]. Then I read [book]. Now I know I am the woman who...",
+    "The book you were too afraid to admit you needed. Write about it from the other side.",
+    "When you finally gave yourself permission to want what you want — what were you reading?"
+  ],
+  "Vinyl":[
+    "If [character] had a record player, what would be on it? Pick one song and tell us the exact scene it matches.",
+    "What album sounds like the book you are reading right now? Not your opinion of the album — the feeling of the parallel.",
+    "Pick a book world. Now pick the one song that sounds like being inside it. Start with the song, not the book.",
+    "The album that sounds like your reading life right now. What is on the turntable in the scene you are living?",
+    "What did you put on while you were reading the chapter that broke you? Start there."
+  ],
+  "Short-Form / Reels":[
+    "What is the most specific thing you actually thought while reading your current book? Not a review. The thought. Say it.",
+    "The reading order matters more than people tell you for this series. Which one and why? Thirty seconds. Just say it.",
+    "The take you almost did not post because it felt too specific. That one. Post it.",
+    "Name one FMC who does not get enough credit. Say why in two sentences like you are texting a friend.",
+    "What did this book do that no other book in the genre does? One thing. No qualifier. Just say it."
+  ]
+};
+function genPrompt(){
+  const set=prompts[promptPillar]||prompts["Fashion x Books"];
+  const p=set[Math.floor(Math.random()*set.length)];
+  const el=document.getElementById('prompt-out');
+  el.textContent=p;
+  el.classList.add('celebrate');
+  setTimeout(()=>el.classList.remove('celebrate'),400);
+}
+
+// ─── HASHTAG COPY ───
+function cpHT(el){
+  const tags=el.previousElementSibling.textContent;
+  navigator.clipboard.writeText(tags).then(()=>{el.textContent='Copied ✓';el.classList.add('copied');setTimeout(()=>{el.textContent='Copy set';el.classList.remove('copied');},2000);}).catch(()=>{el.textContent='Select + copy manually';setTimeout(()=>{el.textContent='Copy set';},2000);});
+}
+function cpText(btn,text){
+  navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copied ✓';setTimeout(()=>{btn.textContent='Copy template';},2000);}).catch(()=>alert('Select and copy manually.'));
+}
+function cpById(id,btn){
+  const el=document.getElementById(id);
+  if(!el)return;
+  navigator.clipboard.writeText(el.textContent).then(()=>{btn.textContent='Copied ✓';setTimeout(()=>{btn.textContent='Copy template';},2000);}).catch(()=>alert('Select and copy manually.'));
+}
+
+// ─── ELEVATOR PITCH ───
+const pitches = {
+  author: {
+    label: "For an author — at a signing or via DM",
+    text: "Hi — I am Haley, I run @newe.reads. I style outfits after the characters and worlds I read, for women who dress their feelings and read to feel found. I have been inside your books for a long time. I would love to be on your radar for ARCs when the time is right.",
+    note: "Keep it warm and specific. If you have read their books, say which one landed. If you gave it 5 stars, say that. Chelsea Curto version: lead with Sin Bin specifically — that is where you gave her 5 stars and she will feel it."
+  },
+  brand: {
+    label: "For a brand — at an event or in a DM",
+    text: "I run @newe.reads — a bookstagram account where I style outfits after the books I read, for women who came out the other side still believing in love. My audience is the woman who reads romantasy and sports romance and wants someone who gets it without having to explain it. I live at the intersection of books and fashion, which means I am useful to both publishing and style brands.",
+    note: "Lead with the gap you fill — two industries at once. If they are a bookish brand, lean into the reader identity. If they are a fashion brand, lean into the editorial aesthetic and the specific woman you reach."
+  },
+  follower: {
+    label: "For a new follower — in comments or DMs",
+    text: "Hey! I am Haley — I style outfits after the books that wrecked me and write about what they made me feel. A little romantasy, a lot of sports romance, and the occasional post about what it means to still be a romantic after everything. Glad you found me.",
+    note: "Keep this one warm and casual. You are not pitching. You are meeting someone. The energy is Bryce Quinlan daytime — spunky, genuine, not trying too hard."
+  },
+  friend: {
+    label: "For a curious friend asking what you are building",
+    text: "Okay so — you know how I have always been the one who reads everything and has opinions about all of it? I started an Instagram account where I style outfits after the characters in the books I read. So like, what would Nesta Archeron wear, or what outfit matches the vibe of Iron Flame. And I write about what the books actually made me feel, not just a review. It is called @newe.reads.",
+    note: "This one can sound like you. Loose, excited, specific. Drop the FMC name they will recognize. If they have read any of the same books, you will know immediately and the conversation writes itself."
+  },
+  event: {
+    label: "At a bookish event — author signing, book club, release party",
+    text: "I run @newe.reads — I am building a bookstagram account around books and fashion, specifically styling outfits after the characters and worlds I read. I am obsessed with romantasy and sports romance and I write about what the books actually make me feel rather than just reviewing them. I am here for [specific author/book] — have you read their work?",
+    note: "At an event, pivot to them fast. You are not networking — you are connecting. Ask about what they are reading, what brought them there. The pitch is just the door opener. The conversation is the point."
+  }
+};
+
+function setPitch(key, el) {
+  document.querySelectorAll("#pitch-pills .pill").forEach(p => p.classList.remove("active"));
+  el.classList.add("active");
+  const p = pitches[key];
+  document.getElementById("pitch-label").textContent = p.label;
+  document.getElementById("pitch-text").textContent = p.text;
+  document.getElementById("pitch-note").textContent = p.note;
+}
+
+function cpPitch() {
+  const text = document.getElementById("pitch-text").textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector("[onclick='cpPitch()']");
+    btn.textContent = "Copied!";
+    setTimeout(() => { btn.textContent = "Copy this pitch"; }, 2000);
+  }).catch(() => alert("Select and copy manually."));
+}
+
+// Initialize pitch display
+window.addEventListener("load", function() {
+  const p = pitches["author"];
+  const el = document.getElementById("pitch-text");
+  const lbl = document.getElementById("pitch-label");
+  const note = document.getElementById("pitch-note");
+  if (el) el.textContent = p.text;
+  if (lbl) lbl.textContent = p.label;
+  if (note) note.textContent = p.note;
+});
+
+</script>
+</body>
+</html>
